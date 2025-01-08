@@ -1,0 +1,82 @@
+  /* Sidebar contraído */
+  /* #sidebar.sidebar-collapsed {
+    width: 60px;
+    transition: width 0.3s;
+  }
+  
+  #sidebar.sidebar-collapsed .links_Listas {
+    display: none;
+  } */
+  
+  /* Sidebar expandido */
+  /* #sidebar.sidebar-expanded {
+    width: 200px;
+    transition: width 0.3s;
+  } */
+  
+  /* Alinear los iconos y texto a la izquierda */
+  #sidebar .nav-item {
+    display: flex;
+    align-items: start;
+  }
+  
+  #sidebar .nav-item i {
+    margin-right: 8px; /* Espacio entre el icono y el texto */
+    font-size: 1.2rem; /* Tamaño del icono */
+  }
+  
+  #sidebar .nav-item a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  /* Efecto de iluminación en hover */
+  #sidebar .nav-item a,
+  #sidebar .nav-item i {
+    color: #ffffff; /* Color de los iconos y texto cuando no está en hover */
+    text-decoration: none; /* Eliminar subrayado de los enlaces */
+  }
+
+  #sidebar .nav-item:hover a,
+  #sidebar .nav-item:hover i {
+    color: #007bff; /* Color de los iconos y texto cuando el cursor pasa por encima */
+  }
+
+  /* Estilos generales del sidebar */
+  .sidebar {
+    transition: width 0.3s;
+    overflow: hidden;
+  }
+
+  /* .sidebar-collapsed {
+    width: 60px; Ancho cuando está contraído 
+  } */
+
+  .sidebar-expanded {
+    width: 200px; /* Ancho cuando está expandido */
+  }
+
+  /* Ocultar el texto cuando está contraído */
+  .sidebar-collapsed .link-text {
+    display: none;
+  }
+
+  .sidebar-expanded .link-text {
+    display: inline; /* Mostrar texto cuando está expandido */
+  }
+
+  /* Estilos para centrar iconos cuando el sidebar está contraído */
+  .nav-item i .links_Listas{
+    font-size: 1.5rem;
+    display: inline-block;
+    text-align: start;
+    width: 100%;
+    margin-bottom: 5px;
+    
+  }
+
+  .links_Listas{
+    text-decoration: none;
+    color: #ffffff;
+  }

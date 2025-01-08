@@ -1,0 +1,35 @@
+body {
+    background-color: #D6D5D5;
+  }
+  
+  .card {
+    border-radius: 10px;
+  }
+  
+  img {
+    max-width: 80%;
+  }
+  
+  a {
+    font-size: 0.9em;
+  }
+
+  hr{
+    margin: 1rem 0;
+    color: inherit;
+    border: 0;
+    border-top: var(--bs-border-width) solid;
+    opacity: .25;
+  }
+    
+  
+  @media (max-width: 768px) {
+    .card {
+      margin: 10px;
+    }
+  }
+
+  .logosFooter{
+    display:flex;
+    height: 5em;
+  }

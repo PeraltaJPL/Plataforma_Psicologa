@@ -1,0 +1,25 @@
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+.navbar {
+  background-color: #333;
+}
+
+.navbar .navbar-text {
+  font-size: 0.9rem;
+  color: white;
+}
+
+.container {
+  margin-top: 20px;
+}
+
+.fc-event {
+  font-size: 14px;
+}
+
+.links_Listas{
+  text-decoration: none;
+  color: white;
+}
