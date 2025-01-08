@@ -53,6 +53,12 @@
             </a>
           </li>
           <li class="nav-item p-3">
+            <a href="{{ route('usuarios.index') }}" class="links_Listas">
+              <i class="bi bi-people"></i> Usuarios
+            </a>
+          </li>
+
+          <li class="nav-item p-3">
             <a href="{{route('notas.create')}}" class="links_Listas">
               <i class="bi bi-card-text"></i> Notas</a>
           </li>
@@ -108,8 +114,8 @@
           </div>
         </div>
 
-          
-        
+
+
 
         <div class="row mb-4">
           <!-- Proximos 3 eventos -->
