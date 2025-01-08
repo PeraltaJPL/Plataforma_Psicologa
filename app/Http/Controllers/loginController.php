@@ -42,4 +42,14 @@ class LoginController extends Controller
             'email' => 'Las credenciales no son válidas.',
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();  // Cierra la sesión del usuario
+
+        $request->session()->invalidate();  // Invalida la sesión
+        $request->session()->regenerateToken();  // Regenera el token CSRF
+
+        return redirect()->route('InicioSesion.inisioSesion');  // Redirige a la página de login
+    }
 }

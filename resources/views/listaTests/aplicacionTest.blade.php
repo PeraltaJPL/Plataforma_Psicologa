@@ -67,9 +67,10 @@
             @endif
 
             <li class="nav-item p-3">
-                <a href="{{ route('InicioSesion.inisioSesion') }}" class="links_Listas">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                </a>
+                <a href="{{ route('logout') }}" class="links_Listas">
+                    @csrf
+                    <i class="bi bi-box-arrow-right"></i>Cerrar Sesión
+                  </a>
             </li>
         </ul>
     </div>
