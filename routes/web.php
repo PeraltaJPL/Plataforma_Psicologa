@@ -54,21 +54,10 @@ Route::middleware(['auth'])->group(function () {
     // Ruta para la lista de grupos
     Route::get('/grupos', [GruposController::class, 'GruposL'])->name('pacientes.grupos');
 
-use App\Http\Controllers\UsuariosController;
-
-Route::prefix('usuarios')->middleware(['auth'])->group(function () {
-    Route::get('/', [UsuariosController::class, 'index'])->name('usuarios.index'); // Lista de usuarios
-    Route::get('/crear', [UsuariosController::class, 'create'])->name('usuarios.create'); // Formulario de creación
-    Route::post('/', [UsuariosController::class, 'store'])->name('usuarios.store'); // Guardar nuevo usuario
-    Route::get('/edit/{id}', [UsuariosController::class, 'edit'])->name('usuarios.edit'); // Formulario de edición
-    Route::put('/{id}', [UsuariosController::class, 'update'])->name('usuarios.update'); // Actualizar usuario
-    Route::delete('/{id}', [UsuariosController::class, 'destroy'])->name('usuarios.destroy'); // Eliminar usuario
-});
 
 
 
 // Pacientes
-use App\Http\Controllers\PacientesController;
 
 Route::prefix('pacientes')->group(function () {
     // Mostrar la lista de pacientes, filtrada por carrera si el parámetro 'career' está presente
