@@ -54,15 +54,41 @@ Route::middleware(['auth'])->group(function () {
     // Ruta para la lista de grupos
     Route::get('/grupos', [GruposController::class, 'GruposL'])->name('pacientes.grupos');
 
-    // Rutas para pacientes
-    Route::prefix('pacientes')->group(function () {
-        Route::get('/', [PacientesController::class, 'index'])->name('pacientes.index');
-        Route::get('/crear', [PacientesController::class, 'create'])->name('pacientes.create');
-        Route::post('/', [PacientesController::class, 'store'])->name('pacientes.store');
-        Route::get('/edit/{patientId}', [PacientesController::class, 'edit'])->name('pacientes.edit');
-        Route::put('/{patientId}', [PacientesController::class, 'update'])->name('pacientes.update');
-        Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
-    });
+use App\Http\Controllers\UsuariosController;
+
+Route::prefix('usuarios')->middleware(['auth'])->group(function () {
+    Route::get('/', [UsuariosController::class, 'index'])->name('usuarios.index'); // Lista de usuarios
+    Route::get('/crear', [UsuariosController::class, 'create'])->name('usuarios.create'); // Formulario de creación
+    Route::post('/', [UsuariosController::class, 'store'])->name('usuarios.store'); // Guardar nuevo usuario
+    Route::get('/edit/{id}', [UsuariosController::class, 'edit'])->name('usuarios.edit'); // Formulario de edición
+    Route::put('/{id}', [UsuariosController::class, 'update'])->name('usuarios.update'); // Actualizar usuario
+    Route::delete('/{id}', [UsuariosController::class, 'destroy'])->name('usuarios.destroy'); // Eliminar usuario
+});
+
+
+
+// Pacientes
+use App\Http\Controllers\PacientesController;
+
+Route::prefix('pacientes')->group(function () {
+    // Mostrar la lista de pacientes, filtrada por carrera si el parámetro 'career' está presente
+    Route::get('/', [PacientesController::class, 'index'])->name('pacientes.index');
+
+    // Mostrar el formulario para agregar un paciente
+    Route::get('/crear', [PacientesController::class, 'create'])->name('pacientes.create');
+
+    // Guardar un nuevo paciente
+    Route::post('/', [PacientesController::class, 'store'])->name('pacientes.store');
+
+    // Mostrar el formulario para editar un paciente
+    Route::get('/edit/{patientId}', [PacientesController::class, 'edit'])->name('pacientes.edit');
+
+    // Actualizar los datos de un paciente
+    Route::put('/{patientId}', [PacientesController::class, 'update'])->name('pacientes.update');
+
+    // Eliminar un paciente
+    Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
+});
 
     // Ruta para ver los resultados de los tests
     Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
