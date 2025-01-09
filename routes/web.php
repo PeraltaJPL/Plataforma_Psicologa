@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AutoestimaTestController;
-use App\Http\Controllers\SesionController;
+//use App\Http\Controllers\SesionController;
 use App\Http\Controllers\TestsController;
 use App\Http\Controllers\BaseTestController;
 use App\Http\Controllers\FullCalendarController;
@@ -12,21 +12,35 @@ use App\Http\Controllers\NotasController;
 use App\Http\Controllers\GruposController;
 use App\Http\Controllers\PacientesController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\ProfileController;
+// use App\Http\Controllers\RegisterController;
+
+use App\Http\Controllers\Auth\RegisterController;
+
+
+Route::get('/register', [RegisterController::class, 'create'])->name('InicioSesion.register');
+Route::post('/register', [RegisterController::class, 'store']);
 
 // Rutas públicas
-Route::middleware('auth')->get('/', [loginController::class, 'login'])->name('login.show'); // Ruta de login
-Route::post('/login', [LoginController::class, 'attempt'])->name('login.attempt'); // Autenticación Login
-Route::get('/logout', [loginController::class, 'logout'])->name('logout');
-Route::get('/', [loginController::class, 'login'])->name('login');
+
+Route::post('/login', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
+Route::get('/logout', [RegisterController::class, 'logout'])->name('logout');
+Route::get('/', [RegisterController::class, 'login'])->name('login');
+
+
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+
+// Route::get('/register', [RegisterController::class, 'view'])->name('InicioSesion.register');
+// Route::post('register', [RegisterController::class, 'store']);
 
 // Grupo de rutas protegidas por middleware (auth)
 Route::middleware(['auth'])->group(function () {
 
     // Ruta de inicio
     Route::get('/home', [HomeController::class, 'home'])->name('Inicio.home'); // Ruta de inicio
-
-    // Rutas para el inicio de sesión
-    Route::get('/InicioSesion', [SesionController::class, 'sesion'])->name('InicioSesion.inisioSesion');
 
     // Rutas para el Lista de los test
     Route::get('/tests/{id}', [BaseTestController::class, 'show'])->name('tests.show'); // Mostrar el test

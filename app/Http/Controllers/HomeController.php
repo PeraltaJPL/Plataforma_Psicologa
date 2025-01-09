@@ -35,9 +35,9 @@ class HomeController extends Controller
             ->get();
 
         // Usuario
-        $user = Auth::user();
+        // $user = Auth::user();
 
         // Pasar las variables a la vista
-        return view('Inicio.home', compact('items', 'todayEvents', 'lastThreeEvents', 'nextThreeEvents','user'));
+        return view('Inicio.home', compact('items', 'todayEvents', 'lastThreeEvents', 'nextThreeEvents'));
     }
 }

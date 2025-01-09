@@ -55,7 +55,7 @@
               <i class="bi bi-card-text"></i> Notas</a>
           </li>
           <li class="nav-item p-3">
-            <a href="{{route('InicioSesion.inisioSesion')}}" class="links_Listas">
+            <a href="{{route('logout')}}" class="links_Listas">
               <i class="bi bi-box-arrow-right"></i>Cerrar Sesión
             </a>
           </li>

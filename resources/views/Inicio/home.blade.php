@@ -19,7 +19,7 @@
     <div class="container-fluid">
       <span class="navbar-brand mb-0 h1">INICIO</span>
       <span class="navbar-text text-white">
-        <a href="#" class="links_Listas">
+        <a href="{{route('profile.show')}}" class="links_Listas">
           {{ $user->username ?? $user->name ?? 'Usuario' }}
         </a>
       </span>
@@ -52,11 +52,11 @@
               <i class="bi bi-calendar"></i> Calendario de Eventos
             </a>
           </li>
-          <li class="nav-item p-3">
-            <a href="{{ route('usuarios.index') }}" class="links_Listas">
+          {{-- <li class="nav-item p-3">
+            <a href="{{ route('') }}" class="links_Listas">
               <i class="bi bi-people"></i> Usuarios
             </a>
-          </li>
+          </li> --}}
 
           <li class="nav-item p-3">
             <a href="{{route('notas.create')}}" class="links_Listas">

@@ -39,6 +39,9 @@
               <div class="mt-3">
                 <a href="#" class="text-muted">Olvidé mi contraseña</a>
               </div>
+              
+              <a href="{{ route('InicioSesion.register') }}"class="btn btn-warning">Registrarse</a>
+
             </div>
           </div>
           <div class="text-center mt-4 logosFooter">

@@ -49,11 +49,11 @@
                             <i class="bi bi-calendar"></i> Calendario de Eventos
                         </a>
                     </li>
-                    <li class="nav-item p-3 card-body bg-light bg-opacity-10 border rounded">
-                        <a href="{{ route('usuarios.index') }}" class="links_Listas">
+                    {{-- <li class="nav-item p-3 card-body bg-light bg-opacity-10 border rounded">
+                        <a href="{{ route('') }}" class="links_Listas">
                             <i class="bi bi-people"></i> Usuarios
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item p-3">
                         <a href="{{ route('notas.create') }}" class="links_Listas">
                             <i class="bi bi-card-text"></i> Notas
