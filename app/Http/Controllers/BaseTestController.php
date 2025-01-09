@@ -7,10 +7,26 @@ use App\Models\Test;
 use App\Models\TestResult;
 use App\Models\TestAnswer;
 use App\Models\Option;
+
 use Illuminate\Support\Facades\Auth;
 
 class BaseTestController extends Controller
 {
+
+
+
+    public function __construct()
+    {
+        // Asegura que el usuario esté autenticado antes de usar cualquier método
+        $this->middleware('auth');
+    }
+
+
+
+
+
+
+
     // Obtiene y muestra la lista de tests
     public function index()
     {
@@ -30,10 +46,34 @@ class BaseTestController extends Controller
     }
 
     // Procesa las respuestas enviadas por el usuario
-    public function submit(Request $request, $id)
+    // public function submit(Request $request, $id)
+    // {
+    //     $test = Test::with('questions.options')->findOrFail($id);
+    //     $userId = auth()->$id();
+
+    //     // Verificar el testId para llamar al método adecuado
+    //     if ($test->testId == 1) {
+    //         return $this->submitAutoestimaTest($request, $test, $userId);
+    //     }
+
+    //     if ($test->testId == 2) {
+    //         return $this->submitEstilosAprendizajeTest($request, $test, $userId);
+    //     }
+
+    //     return back()->with('error', 'Test no reconocido.');
+    // }
+
+    
+
+    // Procesa las respuestas enviadas por el usuario
+    public function submit(Request $request, $testId)
     {
-        $test = Test::with('questions.options')->findOrFail($id);
-        $userId = auth()->$id();
+        $test = Test::with('questions.options')->findOrFail($testId);
+        
+        
+        $userId = auth()->id(); // Laravel maneja la autenticación automáticamente
+
+
 
         // Verificar el testId para llamar al método adecuado
         if ($test->testId == 1) {
@@ -46,6 +86,13 @@ class BaseTestController extends Controller
 
         return back()->with('error', 'Test no reconocido.');
     }
+
+
+
+
+
+
+
 
     // Método para procesar el Test de Autoestima
     protected function submitAutoestimaTest(Request $request, $test, $userId)
@@ -157,42 +204,42 @@ class BaseTestController extends Controller
 
         // Redirigir a la ruta de resultados
         return redirect()->route('tests.TestResults', $testResult->resultId)
-                         ->with('success', 'Test completado exitosamente.');
+            ->with('success', 'Test completado exitosamente.');
     }
 
     // Método para procesar el Test de Estilos de Aprendizaje
     protected function submitEstilosAprendizajeTest(Request $request, $test, $userId)
     {
         $answers = $request->input('answers');
-    
+
         // Validación: asegura que todas las preguntas tienen una respuesta
         foreach ($test->questions as $question) {
             if (!isset($answers[$question->questionId])) {
                 return back()->with('error', 'Por favor responde todas las preguntas.');
             }
         }
-    
+
         // Inicializa los puntos
         $visualPoints = 0;
         $auditoryPoints = 0;
         $kinestheticPoints = 0;
-    
+
         // Listas de preguntas por categoría
         $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
         $auditoryQuestions = [2, 5, 12, 15, 17, 21, 23];
         $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
-    
+
         // Procesar las respuestas y calcular puntos
         foreach ($test->questions as $question) {
             $questionNumber = $question->questionId - ($test->questions->first()->questionId - 1);
             $selectedOptionId = $answers[$question->questionId] ?? null;
-    
+
             if ($selectedOptionId) {
                 $selectedOption = Option::find($selectedOptionId);
-    
+
                 if ($selectedOption) {
                     $value = $selectedOption->value ?? 0;
-    
+
                     if (in_array($questionNumber, $visualQuestions)) {
                         $visualPoints += $value;
                     } elseif (in_array($questionNumber, $auditoryQuestions)) {
@@ -203,14 +250,14 @@ class BaseTestController extends Controller
                 }
             }
         }
-    
+
         // Crear el resultado en formato JSON
         $result = [
             'visual' => $visualPoints,
             'auditivo' => $auditoryPoints,
             'kinestesico' => $kinestheticPoints,
         ];
-    
+
         // Crear el registro de resultado del test
         $testResult = TestResult::create([
             'testId' => $test->testId,
@@ -219,19 +266,19 @@ class BaseTestController extends Controller
             'testDate' => now(),
             'result' => json_encode($result),
         ]);
-    
+
         // Almacenar respuestas del usuario
         foreach ($test->questions as $question) {
             $selectedOptionId = $answers[$question->questionId] ?? null;
             $selectedOptionText = null;
             $selectedOptionValue = null;
-    
+
             if ($selectedOptionId) {
                 $selectedOption = Option::find($selectedOptionId);
                 $selectedOptionText = $selectedOption->optionText ?? null;
                 $selectedOptionValue = $selectedOption->value ?? null;
             }
-    
+
             TestAnswer::create([
                 'resultId' => $testResult->resultId,
                 'questionId' => $question->questionId,
@@ -241,73 +288,73 @@ class BaseTestController extends Controller
                 'value' => $selectedOptionValue,
             ]);
         }
-    
+
         // Redirigir a la ruta de resultados
         return redirect()->route('tests.TestResults', $testResult->resultId)
-                         ->with('success', 'Test completado exitosamente.');
+            ->with('success', 'Test completado exitosamente.');
     }
-    
+
 
     // Muestra los resultados de un test
     public function showResults($id)
-{
-    $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
-    if ($testAnswers->isEmpty()) {
-        return back()->with('error', 'No hay respuestas disponibles para este test.');
-    }
-
-    $test = $testAnswers->first()->question->test ?? null;
-    if (!$test) {
-        return back()->with('error', 'El test asociado no fue encontrado.');
-    }
-
-    $result = TestResult::find($id);
-    $learningStyles = null;
-
-    // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
-    if ($test->testId == 2) {
-        $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
-        $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
-        $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
-        
-        $visualScore = 0;
-        $auditiveScore = 0;
-        $kinestheticScore = 0;
-
-        foreach ($testAnswers as $answer) {
-            $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
-            
-            if (in_array($questionNumber, $visualQuestions)) {
-                $visualScore += $answer->value;
-            } elseif (in_array($questionNumber, $auditiveQuestions)) {
-                $auditiveScore += $answer->value;
-            } elseif (in_array($questionNumber, $kinestheticQuestions)) {
-                $kinestheticScore += $answer->value;
-            }
+    {
+        $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
+        if ($testAnswers->isEmpty()) {
+            return back()->with('error', 'No hay respuestas disponibles para este test.');
         }
-        
-        // Formatear el resultado como un string legible
-        $formattedResult = "Visual: {$visualScore} puntos\n";
-        $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
-        $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
-        
-        // Actualizar el resultado en la base de datos con el formato legible
-        $result->update(['result' => $formattedResult]);
 
-        $learningStyles = [
-            'visual' => $visualScore,
-            'auditivo' => $auditiveScore,
-            'kinestesico' => $kinestheticScore
-        ];
+        $test = $testAnswers->first()->question->test ?? null;
+        if (!$test) {
+            return back()->with('error', 'El test asociado no fue encontrado.');
+        }
+
+        $result = TestResult::find($id);
+        $learningStyles = null;
+
+        // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
+        if ($test->testId == 2) {
+            $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
+            $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
+            $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
+
+            $visualScore = 0;
+            $auditiveScore = 0;
+            $kinestheticScore = 0;
+
+            foreach ($testAnswers as $answer) {
+                $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
+
+                if (in_array($questionNumber, $visualQuestions)) {
+                    $visualScore += $answer->value;
+                } elseif (in_array($questionNumber, $auditiveQuestions)) {
+                    $auditiveScore += $answer->value;
+                } elseif (in_array($questionNumber, $kinestheticQuestions)) {
+                    $kinestheticScore += $answer->value;
+                }
+            }
+
+            // Formatear el resultado como un string legible
+            $formattedResult = "Visual: {$visualScore} puntos\n";
+            $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
+            $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
+
+            // Actualizar el resultado en la base de datos con el formato legible
+            $result->update(['result' => $formattedResult]);
+
+            $learningStyles = [
+                'visual' => $visualScore,
+                'auditivo' => $auditiveScore,
+                'kinestesico' => $kinestheticScore
+            ];
+        }
+
+        return view('tests.TestResults', [
+            'test' => $test,
+            'testAnswers' => $testAnswers,
+            'result' => $result,
+            'learningStyles' => $learningStyles
+        ]);
     }
-
-    return view('tests.TestResults', [
-        'test' => $test,
-        'testAnswers' => $testAnswers,
-        'result' => $result,
-        'learningStyles' => $learningStyles
-    ]);
-}
 
     public function showResultsPsychologist($id)
     {

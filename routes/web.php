@@ -29,10 +29,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/InicioSesion', [SesionController::class, 'sesion'])->name('InicioSesion.inisioSesion');
 
     // Rutas para el Lista de los test
-    Route::get('/tests/{id}', [BaseTestController::class, 'show'])->name('tests.show'); // Mostrar el test
-    Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
+    // RUTA AFECTADA
+    Route::get('/tests/{testId}', [BaseTestController::class, 'show'])->name('tests.show'); // Mostrar el test
+    // RUTA AFECTADA
+    Route::post('/tests/{testId}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
+    
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
-    Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
+    // RUTA AFECTADA
+    Route::get('/tests/{testId}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
 
     // Rutas para el calendario
     Route::controller(FullCalendarController::class)->group(function () {
