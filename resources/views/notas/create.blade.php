@@ -52,7 +52,7 @@
             </a>
           </li>
           <li class="nav-item p-3 card-body bg-light bg-opacity-10 border rounded">
-            <a href="{{route('notas.notas')}}" class="links_Listas">
+            <a href="{{route('notas.create')}}" class="links_Listas">
               <i class="bi bi-card-text"></i> Notas</a>
           </li>
           <li class="nav-item p-3">

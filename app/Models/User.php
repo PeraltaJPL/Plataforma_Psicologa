@@ -24,6 +24,8 @@ class User extends Authenticatable
         'career',
         'schoolCycle',
         'username',
+        'role', 
+        'is_active',
     ];
 
     /**

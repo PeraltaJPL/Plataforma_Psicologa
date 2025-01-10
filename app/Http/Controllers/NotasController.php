@@ -8,12 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class NotasController extends Controller
 {
-    // Función para mostrar la vista de notas
-    public function index()
-    {
-        $user = Auth::user();
-        return view('notas.notas', compact('user')); // Vista de notas
-    }
 
     // Función para crear una nueva nota
     public function create()

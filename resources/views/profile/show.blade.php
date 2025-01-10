@@ -11,6 +11,7 @@
 </head>
 <body>
     <div class="container mt-5">
+        <div class="card p-5">
         <div class="profile-container">
             <div class="text-center">
                 <h2>{{ $user->name }}</h2>
@@ -18,21 +19,24 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col-md-6">
+                <div class="">
                     <h5>Información Personal</h5>
                     <p><strong>Nombre:</strong> {{ $user->name }}</p>
                     <p><strong>Correo Electrónico:</strong> {{ $user->email }}</p>
                 </div>
-                <div class="col-md-6">
+                <div class="">
                     <h5>Opciones</h5>
                     <!-- Botón para abrir el modal de editar información -->
-                    <button class="btn btn-primary w-100 edit-btn" data-bs-toggle="modal" data-bs-target="#editInfoModal">
+                    <button class="btn btn-warning w-100 edit-btn" data-bs-toggle="modal" data-bs-target="#editInfoModal">
                         Editar Información
                     </button>
                     <!-- Botón para abrir el modal de cambiar contraseña -->
                     <button class="btn btn-secondary w-100 mt-2 edit-btn" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                         Cambiar Contraseña
                     </button>
+                    <a href="{{route('Inicio.home')}}" class="btn btn-primary w-100 mt-2">
+                        Regresar
+                    </a>
                 </div>
             </div>
     
@@ -41,6 +45,7 @@
                     {{ session('success') }}
                 </div>
             @endif
+        </div>
         </div>
     </div>
     

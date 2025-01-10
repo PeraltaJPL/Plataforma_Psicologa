@@ -16,6 +16,7 @@
     </nav>
 
     <div class="container">
+        <div class="card p-5 mt-5">
         <h1>Registrar Nuevo Usuario</h1>
         <form method="POST" action="{{ route('InicioSesion.register') }}">
             @csrf
@@ -41,6 +42,7 @@
     
             <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
