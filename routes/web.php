@@ -53,6 +53,7 @@ Route::middleware(['auth'])->group(function () {
 });
     
 // Grupo de rutas protegidas por middleware (auth)
+// Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/home', [HomeController::class, 'home'])->name('Inicio.home'); // Ruta de inicio

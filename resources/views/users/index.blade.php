@@ -6,9 +6,9 @@
     <title>Gestión de Usuarios</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
+<body class="bg-light">
     <div class="container mt-5">
-        <div class="card p-5">
+        <div class="card p-5 shadow-lg">
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">
                 <h1>
@@ -37,6 +37,7 @@
             </thead>
             <tbody>
                 @foreach($users as $user)
+                @if($user->role !== 'patient')
                     <tr>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
@@ -44,7 +45,7 @@
                             <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
                                 @csrf
                                 <select name="role" class="form-select" onchange="this.form.submit()">
-                                    <option value="patient" {{ $user->role === 'patient' ? 'selected' : '' }}>Paciente</option>
+                                    {{-- <option value="patient" {{ $user->role === 'patient' ? 'selected' : '' }}>Paciente</option> --}}
                                     <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Usuario</option>
                                     <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrador</option>
                                 </select>
@@ -66,6 +67,7 @@
                             </form>
                         </td>
                     </tr>
+                    @endif
                 @endforeach
             </tbody>
         </table>

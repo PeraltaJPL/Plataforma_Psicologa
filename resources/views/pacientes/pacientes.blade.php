@@ -80,7 +80,7 @@
                 @endif
 
                 <table class="table table-bordered">
-                    <thead>
+                    <thead>    
                         <tr>
                             <th>Nombre</th>
                             <th>No. Control</th>
@@ -91,6 +91,7 @@
                     </thead>
                     <tbody>
                         @forelse($users as $user)
+                        @if($user->role === 'patient')
                             <tr>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->controlNumber }}</td>
@@ -106,6 +107,7 @@
                                     </form>
                                 </td>
                             </tr>
+                        @endif
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center">No hay pacientes registrados.</td>

@@ -9,9 +9,9 @@
     <style>
     </style>
 </head>
-<body>
+<body class="bg-light">
     <div class="container mt-5">
-        <div class="card p-5">
+        <div class="card p-5 shadow-lg">
         <div class="profile-container">
             <div class="text-center">
                 <h2>{{ $user->name }}</h2>

@@ -79,6 +79,7 @@
             </li>
         </ul>
     </div>
+    
     <div class="col-md-10 bg-light p-4">
         @if(Auth::check() && Auth::user()->role !== 'psychologist')
             <div class="row justify-content-center">
