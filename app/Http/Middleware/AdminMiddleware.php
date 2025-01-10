@@ -16,7 +16,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && auth()->user()->role !== 'admin') {
-            return redirect('/')->with('error', 'No tienes acceso a esta sección.');
+            return redirect('/listaTests')->with('error', 'No tienes acceso a esta sección.');
         }
 
     return $next($request);

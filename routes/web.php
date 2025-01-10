@@ -37,17 +37,25 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/users/{id}', [UsuariosController::class, 'destroy'])->name('users.destroy');
 });
 
-// Grupo de rutas protegidas por middleware (auth)
-Route::middleware(['auth'])->group(function () {
-
-    // Ruta de inicio
-    Route::get('/home', [HomeController::class, 'home'])->name('Inicio.home'); // Ruta de inicio
-
     // Rutas para el Lista de los test
+Route::middleware(['auth'])->group(function () {
+    // Ruta de inicio
+    
+
+    //Ruta para los test
     Route::get('/tests/{id}', [BaseTestController::class, 'show'])->name('tests.show'); // Mostrar el test
     Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
+    
+    // Ruta para ver los resultados de los tests
+    Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+});
+    
+// Grupo de rutas protegidas por middleware (auth)
+Route::middleware(['auth', 'admin'])->group(function () {
+
+    Route::get('/home', [HomeController::class, 'home'])->name('Inicio.home'); // Ruta de inicio
 
     // Rutas para el calendario
     Route::controller(FullCalendarController::class)->group(function () {
@@ -69,7 +77,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/grupos', [GruposController::class, 'GruposL'])->name('pacientes.grupos');
 
 // Pacientes
-
 Route::prefix('pacientes')->group(function () {
     // Mostrar la lista de pacientes, filtrada por carrera si el parámetro 'career' está presente
     Route::get('/', [PacientesController::class, 'index'])->name('pacientes.index');
@@ -90,7 +97,6 @@ Route::prefix('pacientes')->group(function () {
     Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
 });
 
-    // Ruta para ver los resultados de los tests
-    Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+    
 
 });

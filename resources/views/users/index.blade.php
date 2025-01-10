@@ -44,7 +44,8 @@
                             <form action="{{ route('users.updateRole', $user->id) }}" method="POST">
                                 @csrf
                                 <select name="role" class="form-select" onchange="this.form.submit()">
-                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Paciente</option>
+                                    <option value="patient" {{ $user->role === 'patient' ? 'selected' : '' }}>Paciente</option>
+                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Usuario</option>
                                     <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Administrador</option>
                                 </select>
                             </form>

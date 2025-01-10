@@ -16,9 +16,9 @@
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">Editar Paciente</span>
             <span class="navbar-text text-white">
-                <a href="#" class="links_Listas">
-                    <i class="bi bi-person-circle"></i> Mayra Salazar García
-                </a>
+                <a href="{{route('profile.show')}}" class="links_Listas">
+                    <i class="bi bi-person-circle"> </i>{{ $user->username ?? $user->name ?? 'Usuario' }}
+                  </a>
             </span>
         </div>
     </nav>
@@ -48,6 +48,11 @@
                             <i class="bi bi-calendar"></i> Calendario de Eventos
                         </a>
                     </li>
+                    <li class="nav-item p-3">
+                        <a href="{{ route('users.index') }}" class="links_Listas">
+                          <i class="bi bi-people"></i> Usuarios
+                        </a>
+                      </li>
                     <li class="nav-item p-3">
                         <a href="{{ route('notas.create') }}" class="links_Listas">
                             <i class="bi bi-card-text"></i> Notas
