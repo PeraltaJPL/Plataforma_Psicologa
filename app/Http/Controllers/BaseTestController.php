@@ -12,19 +12,16 @@ use Illuminate\Support\Facades\Auth;
 class BaseTestController extends Controller
 {
     // Obtiene y muestra la lista de tests
-    public function index()
-    {
+    public function index() {
         $user = Auth::user();  // Esto obtiene al usuario autenticado
         $tests = Test::all();
         $testResults = TestResult::with('test', 'user', 'patient')->get(); // Cargar las relaciones de Test, User y Patient
-
         return view('listaTests.aplicacionTest', compact('tests', 'testResults', 'user'));
     }
 
 
     // Muestra las preguntas y opciones de un test específico
-    public function show($id)
-    {
+    public function show($id) {
         $test = Test::with('questions.options')->findOrFail($id);
         return view('listaTests.TestTiposDeAprendizaje.show', compact('test'));
     }
