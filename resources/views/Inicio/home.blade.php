@@ -84,98 +84,134 @@
             </div>
           </div>
           <!-- Eventos del Día -->
-          <div class="col-md-6">
-            <div class="card text-center shadow-lg">
-              <div class="card-body">
-                <h5 class="card-title">EVENTOS EL DÍA DE HOY <i class="bi bi-calendar"></i></h5>
-                <table class="table">
-                  <thead class="bg-primary bg-opacity-75">
-                    <tr>
-                      <th>Título</th>
-                      {{-- <th>Descripción</th> --}}
-                      {{-- <th>Hora</th> --}}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @forelse ($todayEvents as $event)
-                    <tr>
-                      <td>{{ $event->title }}</td>
-                      {{-- <td>{{ \Carbon\Carbon::parse($event->start)->format('H:i') }}</td> --}}
-                    </tr>
-                    @empty
-                    <tr>
-                      <td colspan="1">No hay eventos el día de hoy</td>
-                    </tr>
-                    @endforelse
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+<div class="col-md-6">
+  <div class="card text-center shadow-lg">
+    <div class="card-body">
+      <h5 class="card-title">EVENTOS EL DÍA DE HOY <i class="bi bi-calendar"></i></h5>
+      <table class="table">
+        <thead class="bg-primary bg-opacity-75">
+          <tr>
+            <th>Título</th>
+            <th>Hora</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse ($todayEvents as $event)
+          <tr>
+            <td>{{ $event->title }}</td>
+            <td>
+              @if ($event->start && $event->end)
+                {{ \Carbon\Carbon::parse($event->start)->format('d-m-Y H:i') }} - 
+                {{ \Carbon\Carbon::parse($event->end)->format('d-m-Y H:i') }}
+              @else
+                Sin horario
+              @endif
+            </td>            
+          </tr>
+          @empty
+          <tr>
+            <td colspan="2">No hay eventos el día de hoy</td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
 
+<div class="row mb-4">
+  <!-- Próximos 3 eventos -->
+  <div class="col-md-6">
+    <div class="card text-center shadow-lg">
+      <div class="card-body">
+        <h5 class="card-title">PRÓXIMOS 3 EVENTOS <i class="bi bi-calendar3-week"></i></h5>
+        <table class="table">
+          <thead class="bg-primary bg-opacity-75">
+            <tr>
+              <th>Título</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+          @forelse ($nextThreeEvents as $event)
+          <tr>
+            <td>{{ $event->title }}</td>
+            <td>
+              @if ($event->start && $event->end)
+                {{ \Carbon\Carbon::parse($event->start)->format('d-m-Y') }} - 
+                {{ \Carbon\Carbon::parse($event->end)->format('d-m-Y') }}
+              @else
+                Sin fecha definida
+              @endif
+            </td>
+            <td>
+              @if ($event->start && $event->end)
+                {{ \Carbon\Carbon::parse($event->start)->format('H:i') }} - 
+                {{ \Carbon\Carbon::parse($event->end)->format('H:i') }}
+              @else
+                Sin horario
+              @endif
+            </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="3">No hay próximos eventos</td>
+          </tr>
+          @endforelse
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Últimos 3 eventos -->
+  <div class="col-md-6">
+    <div class="card text-center shadow-lg">
+      <div class="card-body">
+        <h5 class="card-title">ÚLTIMOS 3 EVENTOS <i class="bi bi-calendar-check"></i></h5>
+        <table class="table">
+          <thead class="bg-primary bg-opacity-75">
+            <tr>
+              <th>Título</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse ($lastThreeEvents as $event)
+            <tr>
+              <td>{{ $event->title }}</td>
+              <td>
+                @if ($event->start && $event->end)
+                  {{ \Carbon\Carbon::parse($event->start)->format('d-m-Y') }} - 
+                  {{ \Carbon\Carbon::parse($event->end)->format('d-m-Y') }}
+                @else
+                  Sin fecha definida
+                @endif
+              </td>
+              <td>
+                @if ($event->start && $event->end)
+                  {{ \Carbon\Carbon::parse($event->start)->format('H:i') }} - 
+                  {{ \Carbon\Carbon::parse($event->end)->format('H:i') }}
+                @else
+                  Sin horario
+                @endif
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="3">No hay eventos recientes</td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
-
-
-        <div class="row mb-4">
-          <!-- Proximos 3 eventos -->
-          <div class="col-md-6">
-            <div class="card text-center shadow-lg">
-              <div class="card-body">
-                <h5 class="card-title">PROXIMOS 3 EVENTOS <i class="bi bi-calendar3-week"></i></h5>
-                <table class="table">
-                  <thead class="bg-primary bg-opacity-75">
-                    <tr>
-                      <th>Título</th>
-                      <th>Fecha</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @forelse ($nextThreeEvents as $event)
-                    <tr>
-                      <td>{{ $event->title }}</td>
-                      <td>{{ \Carbon\Carbon::parse($event->start)->format('d-m-Y') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                      <td colspan="2">No hay próximos eventos</td>
-                    </tr>
-                    @endforelse
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <!-- Últimos 3 eventos -->
-          <div class="col-md-6">
-            <div class="card text-center shadow-lg">
-              <div class="card-body">
-                <h5 class="card-title">ÚLTIMOS 3 EVENTOS <i class="bi bi-calendar-check"></i></h5>
-                <table class="table">
-                  <thead class="bg-primary bg-opacity-75">
-                    <tr>
-                      <th>Título</th>
-                      {{-- <th>Descripción</th> --}}
-                      <th>Fecha</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @forelse ($lastThreeEvents as $event)
-                    <tr>
-                      <td>{{ $event->title }}</td>
-                      <td>{{ \Carbon\Carbon::parse($event->start)->format('d-m-Y') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                      <td colspan="2">No hay eventos recientes</td>
-                    </tr>
-                    @endforelse
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
         <!-- Notas y últimos eventos -->
         <div class="row mb-4">
           <!-- Notas -->

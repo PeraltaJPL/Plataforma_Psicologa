@@ -86,110 +86,152 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,dayGridWeek,dayGridDay',
-                },
-                locale: 'es',
-                editable: true,
-                selectable: true,
-                events: "{{ route('fullcalendar.events') }}",
-                /** -------------------------------------------------------------
-                 * creacion de eventos
-                 */
-                dateClick: function(info) {
-                    var title = prompt('Agrega un nuevo evento:');
-                    if (title) {
-                        var start = moment(info.dateStr).format('Y-MM-DD');
-                        var end = moment(info.dateStr).format('Y-MM-DD');
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,dayGridWeek,dayGridDay',
+        },
+        locale: 'es',
+        editable: true,
+        selectable: true,
+        events: "{{ route('fullcalendar.events') }}",
+        
+        dateClick: function(info) {
+            $('#eventStart').val(info.dateStr);
+            $('#eventEnd').val(info.dateStr);
+            $('#addEventModal').modal('show');
+        },
+        
+            eventClick: function(info) {
+            $('#deleteEventModal').modal('show');
+            $('#confirmDeleteEvent').off('click').on('click', function() {
+                $.ajax({
+                    type: "DELETE",
+                    url: "{{ route('fullcalendar.events.destroy') }}",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        eventId: info.event.id,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            info.event.remove();
+                            $('#deleteEventModal').modal('hide');
 
-                        $.ajax({
-                            url: "{{ route('fullcalendar.events.add') }}",
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                title: title,
-                                start: start,
-                                end: end
-                            },
-                            type: "POST",
-                            success: function(data) {
-                                calendar.addEvent({
-                                    id: data.id,
-                                    title: title,
-                                    start: end,
-                                    allDay: false
-                                });
-                                calendar.render();
-                            }
-                        });
-                    }
-                },
-                /** -------------------------------------------------------------
-                 * Eliminación de eventos
-                 */
-                eventClick: function(info) {
-                    var deleteMsg = confirm("¿Quieres eliminar este evento?");
-                    if (deleteMsg) {
-                        $.ajax({
-                            type: "DELETE",
-                            url: "{{ route('fullcalendar.events.destroy') }}",
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                eventId: info.event.id,
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    info.event.remove();
-                                    alert('Evento eliminado.');
-                                } else {
-                                    alert(response.message ||
-                                        'Error al eliminar el evento.');
-                                }
-                            },
-                            error: function(xhr) {
-                                console.error(xhr.responseText);
-                                alert('Ocurrió un error en el servidor.');
-                            }
-                        });
-                    }
-                },
-                /** -------------------------------------------------------------
-                 * Actualización de eventos
-                 */
-                eventDrop: function(info) {
-                    var start = moment(info.event.start).format('Y-MM-DD');
-                    var end = moment(info.event.end).format('Y-MM-DD');
-
-                    $.ajax({
-                        url: "{{ route('fullcalendar.events.update') }}",
-                        type: "PUT",
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            title: info.event.title,
-                            start: start,
-                            end: end,
-                            eventId: info.event.id,
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                alert('Evento actualizado.');
-                            } else {
-                                alert(response.message || 'Error al actualizar el evento.');
-                            }
-                        },
-                        error: function(xhr) {
-                            console.error(xhr.responseText);
-                            alert('Ocurrió un error en el servidor.');
+                            // Mostrar el modal de confirmación
+                            $('#confirmationMessage').text('Evento eliminado.');
+                            $('#confirmationModal').modal('show');
+                        } else {
+                            alert(response.message || 'Error al eliminar el evento.');
                         }
-                    });
-                },
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        alert('Ocurrió un error en el servidor.');
+                    }
+                });
             });
-            calendar.render();
+        }
+    });
+
+    $('#addEventForm').on('submit', function(e) {
+        e.preventDefault();
+        var title = $('#eventTitle').val();
+        var start = $('#eventStart').val();
+        var end = $('#eventEnd').val();
+
+        $.ajax({
+            url: "{{ route('fullcalendar.events.add') }}",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                title: title,
+                start: start,
+                end: end
+            },
+            type: "POST",
+            success: function(data) {
+                calendar.addEvent({
+                    id: data.id,
+                    title: title,
+                    start: start,
+                    end: end,
+                    allDay: false
+                });
+                $('#addEventModal').modal('hide');
+                calendar.render();
+            }
         });
+    });
+
+    calendar.render();
+});
+
     </script>
+    <!-- Modal para Agregar Evento -->
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="addEventForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addEventModalLabel">Agregar Evento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="eventTitle" class="form-label">Nombre del Evento</label>
+              <input type="text" class="form-control" id="eventTitle" name="title" required>
+            </div>
+            <div class="mb-3">
+              <label for="eventStart" class="form-label">Inicio</label>
+              <input type="datetime-local" class="form-control" id="eventStart" name="start" required>
+            </div>
+            <div class="mb-3">
+              <label for="eventEnd" class="form-label">Fin</label>
+              <input type="datetime-local" class="form-control" id="eventEnd" name="end" required>
+            </div>
+          </div>          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Confirmar Eliminación -->
+  <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteEventModalLabel">Eliminar Evento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas eliminar este evento?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteEvent">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Mensajes de Confirmación -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <p id="confirmationMessage"></p>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/ajustesVistas.js') }}"></script>
     <script src="{{ asset('assets/js/notas.js') }}"></script>

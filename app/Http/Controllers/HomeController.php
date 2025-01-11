@@ -19,8 +19,13 @@ class HomeController extends Controller
 
         // Obtener eventos del día de hoy
         $todayEvents = Event::whereDate('start', $today)
-            ->orderBy('start', 'asc')
-            ->get();
+        ->orderBy('start', 'asc')
+        ->get();
+
+        foreach ($todayEvents as $event) {
+        // Verifica valores en consola de Laravel
+            logger("Evento: {$event->title}, Inicio: {$event->start}, Fin: {$event->end}");
+        }
 
         // Obtener los últimos 3 eventos (antes de hoy)
         $lastThreeEvents = Event::whereDate('start', '<', $today)

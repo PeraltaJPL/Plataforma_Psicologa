@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\FullCalendarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Event;
 
 class FullCalendarController extends Controller
 {
@@ -29,7 +30,15 @@ class FullCalendarController extends Controller
 
     public function add(Request $request): JsonResponse
     {
-        return $this->fullCalendarService->add($request);
+        $event = Event::create([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'start' => $request->input('start'),
+            'end' => $request->input('end'),
+        ]);
+    
+        return response()->json(['success' => true, 'id' => $event->eventId]);
+        // return $this->fullCalendarService->add($request);
     }
 
     public function update(Request $request): JsonResponse
