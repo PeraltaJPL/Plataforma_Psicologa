@@ -26,4 +26,6 @@ class ResultController extends Controller
 
         return view('results.show', compact('testResult', 'answers'));
     }
+
+    
 }

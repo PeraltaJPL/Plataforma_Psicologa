@@ -12,6 +12,14 @@
 </head>
 
 <body>
+
+    @php
+    $roles = [
+        'admin' => 'Administrador',
+        'user' => 'Usuario',
+        'patient' => 'Paciente',
+    ];
+@endphp
   <!-- Barra superior -->
   <nav class="navbar navbar-dark bg-dark bg-gradient">
     <div class="container-fluid">
@@ -79,7 +87,7 @@
             </li>
         </ul>
     </div>
-    
+
     <div class="col-md-10 bg-light p-4">
         @if(Auth::check() && Auth::user()->role !== 'psychologist')
             <div class="row justify-content-center">
@@ -103,21 +111,39 @@
             <div class="card p-5 shadow-lg">
 
             <h4>Resultados de los Tests</h4>
-            <table class="table table-bordered">
+        
+            <!-- Campos de búsqueda -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" id="searchName" class="form-control" placeholder="Buscar por nombre">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="searchControl" class="form-control" placeholder="Buscar por N.Control">
+                </div>
+            </div>
+        
+            <!-- Tabla de resultados -->
+            <table class="table table-bordered" id="resultsTable">
                 <thead>
                     <tr>
                         <th>Usuario</th>
                         <th>Test Realizado</th>
+                        <th>N.Control</th>
+                        <th>Carrera</th>
+                        <th>Roles</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($testResults as $result)
                     <tr>
-                        <td>{{ $result->User->name ?? 'N/A' }}</td>
+                        <td>{{ $result->User ->name ?? 'N/A' }}</td>
                         <td>{{ $result->test->name }}</td>
+                        <td>{{ $result->User ->controlNumber ?? 'N/A' }}</td>
+                        <td>{{ $result->User ->career ?? 'N/A' }}</td>
+                        <td>{{ $roles[$result->User ->role] ?? 'N/A' }}</td>
                         <td>
-                          <a href="{{ route('tests.resultsPsicologist', $result->resultId) }}" class="btn btn-info">Ver Resultados</a>
+                            <a href="{{ route('tests.resultsPsicologist', $result->resultId) }}" class="btn btn-info">Ver Resultados</a>
                         </td>
                     </tr>
                     @endforeach
@@ -130,6 +156,45 @@
     </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ asset('assets/js/ajustesVistas.js') }}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener referencias a los campos de búsqueda
+        const searchName = document.getElementById('searchName');
+        const searchControl = document.getElementById('searchControl');
+
+        // Obtener referencia a la tabla y sus filas
+        const table = document.getElementById('resultsTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        // Función para filtrar la tabla
+        function filterTable() {
+            const nameValue = searchName.value.toLowerCase();
+            const controlValue = searchControl.value.toLowerCase();
+
+            // Recorrer todas las filas de la tabla
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const nameCell = row.getElementsByTagName('td')[0].textContent.toLowerCase();
+                const controlCell = row.getElementsByTagName('td')[2].textContent.toLowerCase();
+
+                // Verificar si el nombre y el número de control coinciden con la búsqueda
+                const nameMatch = nameCell.includes(nameValue);
+                const controlMatch = controlCell.includes(controlValue);
+
+                // Mostrar u ocultar la fila según coincida
+                if (nameMatch && controlMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Escuchar cambios en los campos de búsqueda
+        searchName.addEventListener('input', filterTable);
+        searchControl.addEventListener('input', filterTable);
+    });
+</script>
 </body>
 
 </html>
