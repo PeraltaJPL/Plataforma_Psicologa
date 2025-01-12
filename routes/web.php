@@ -49,7 +49,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
     Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
     // Ruta para ver los resultados de los tests
-    Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+    // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+    Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
 });
 
 // Grupo de rutas protegidas por middleware (auth)
