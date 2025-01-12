@@ -45,19 +45,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas para el Lista de los test
 Route::middleware(['auth'])->group(function () {
     // Ruta de inicio
-    
+
 
     //Ruta para los test
     Route::get('/tests/{id}', [BaseTestController::class, 'show'])->name('tests.show'); // Mostrar el test
     Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
-
+    Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
     // Ruta para ver los resultados de los tests
     // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
     Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
 });
-    
+
 // Grupo de rutas protegidas por middleware (auth)
 // Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -104,6 +104,6 @@ Route::prefix('pacientes')->group(function () {
     Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
 });
 
-    
+
 
 });
