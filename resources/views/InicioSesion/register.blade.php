@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Estilo cuando el campo es válido (verde) */
+        .is-valid {
+            border-color: green;
+        }
+
+        /* Estilo cuando el campo es inválido (rojo) */
+        .is-invalid {
+            border-color: red;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -45,19 +58,24 @@
                             </div>
 
                             <!-- Contraseña -->
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Contraseña</label>
-                                <input type="password" name="password" class="form-control text-center" id="password" placeholder="********" required>
-                                @error('password')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
+                           <!-- Contraseña -->
+<div class="mb-3">
+    <label for="password" class="form-label">Contraseña</label>
+    <input type="password" name="password" class="form-control text-center" id="password" placeholder="Escriba su contraseña" value="{{ old('password') }}"required>
+    @error('password')
+        <div class="text-danger mt-1">{{ $message }}</div>
+    @enderror
+</div>
 
-                            <!-- Confirmar Contraseña -->
-                            <div class="mb-3">
-                                <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
-                                <input type="password" name="password_confirmation" class="form-control text-center" id="password_confirmation" placeholder="********" required>
-                            </div>
+<!-- Confirmar Contraseña -->
+<div class="mb-3">
+    <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
+    <input type="password" name="password_confirmation" class="form-control text-center" id="password_confirmation" placeholder="Escriba su contraseña" value="{{ old('password_confirmation') }}"required>
+    @error('password_confirmation')
+        <div class="text-danger mt-1">{{ $message }}</div>
+    @enderror
+</div>
+
 
                             <!-- Botón de envío -->
                             <button type="submit" class="btn btn-primary">Registrar</button>
@@ -82,6 +100,37 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validación en tiempo real para la contraseña
+        document.getElementById('password').addEventListener('input', function() {
+            const passwordField = document.getElementById('password');
+
+            // Verifica que la contraseña tenga al menos 6 caracteres
+            if (passwordField.value.length >= 8) {
+                passwordField.classList.remove('is-invalid');
+                passwordField.classList.add('is-valid');
+            } else {
+                passwordField.classList.remove('is-valid');
+                passwordField.classList.add('is-invalid');
+            }
+        });
+
+        // Validación en tiempo real para la confirmación de la contraseña
+        document.getElementById('password_confirmation').addEventListener('input', function() {
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('password_confirmation');
+
+            // Verifica que las contraseñas coincidan y tengan al menos 6 caracteres
+            if (confirmPasswordField.value === passwordField.value && confirmPasswordField.value.length >= 8) {
+                confirmPasswordField.classList.remove('is-invalid');
+                confirmPasswordField.classList.add('is-valid');
+            } else {
+                confirmPasswordField.classList.remove('is-valid');
+                confirmPasswordField.classList.add('is-invalid');
+            }
+        });
+    </script>
+
 </body>
 
 </html>
