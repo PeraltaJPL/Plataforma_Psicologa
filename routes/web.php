@@ -17,13 +17,13 @@ use App\Http\Controllers\Auth\RegisterController;
 
 
 Route::middleware('guest')->group(function(){
-//Rutas para el registro
-Route::get('/register', [RegisterController::class, 'create'])->name('InicioSesion.register');
-Route::post('/register', [RegisterController::class, 'store']);
+    //Rutas para el registro
+    Route::get('/register', [RegisterController::class, 'create'])->name('InicioSesion.register');
+    Route::post('/register', [RegisterController::class, 'store']);
 
-//Rutas para el login y el logout
-Route::post('/loginPost', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
-Route::get('/', [RegisterController::class, 'login'])->name('login');
+    //Rutas para el login y el logout
+    Route::post('/loginPost', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
+    Route::get('/', [RegisterController::class, 'login'])->name('login');
 });
 
 //Ruta para cerrar sesion
@@ -52,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
-    Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
+    
     // Ruta para ver los resultados de los tests
     // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
     Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');

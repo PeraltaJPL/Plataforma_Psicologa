@@ -30,15 +30,15 @@
                 <label for="email" class="form-label">Correo</label>
                 <input type="email" name="email" class="form-control text-center" id="email" placeholder="Escriba su correo">
                 @error('email')
-    <div class="text-danger">{{ $message }}</div>
-  @enderror
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" name="password" class="form-control text-center" id="password" placeholder="********">
                 @error('password')
-    <div class="text-danger">{{ $message }}</div>
-  @enderror
+                <div class="text-danger">{{ $message }}</div>
+                @enderror
               </div>
               <button type="submit" class="btn btn-success">Entrar</button>
 
