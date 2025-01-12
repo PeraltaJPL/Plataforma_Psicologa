@@ -16,7 +16,7 @@
 
   <nav class="navbar navbar-dark bg-dark bg-gradient">
     <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">NOTAS</span>
+      <span class="navbar-brand mb-0 h1">EDITAR NOTAS</span>
       <span class="navbar-text text-white">
         <a href="{{route('profile.show')}}" class="links_Listas">
           <i class="bi bi-person-circle"> </i>{{ $user->username ?? $user->name ?? 'Usuario' }}
@@ -57,7 +57,7 @@
             </a>
           </li>
           <li class="nav-item p-3 card-body bg-light bg-opacity-10 border rounded">
-            <a href="{{route('notas.notas')}}" class="links_Listas">
+            <a href="{{route('notas.create')}}" class="links_Listas">
               <i class="bi bi-card-text"></i> Notas</a>
           </li>
           <li class="nav-item p-3">

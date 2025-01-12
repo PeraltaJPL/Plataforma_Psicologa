@@ -47,9 +47,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
-    
+
     // Ruta para ver los resultados de los tests
-    Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+    // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
+    Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
 });
     
 // Grupo de rutas protegidas por middleware (auth)

@@ -30,7 +30,7 @@ class BaseTestController extends Controller
     public function submit(Request $request, $id)
     {
         $test = Test::with('questions.options')->findOrFail($id);
-        $userId = auth()->$id();
+        $userId = auth()->id();
 
         // Verificar el testId para llamar al método adecuado
         if ($test->testId == 1) {
