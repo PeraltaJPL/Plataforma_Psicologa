@@ -30,7 +30,7 @@
       <!-- Sidebar -->
       <div id="sidebar" class="sidebar sidebar-collapsed col-md-2 bg-dark vh-100">
           <ul class="nav flex-column text-white">
-            @if(Auth::check() && Auth::user()->role !== 'patient')
+            @if(Auth::check() && Auth::user()->role === 'admin')
                 <li class="nav-item p-3">
                     <a href="{{ route('Inicio.home') }}" class="links_Listas">
                         <i class="bi bi-house"></i> Inicio
@@ -48,7 +48,7 @@
 
 
             <!-- Resto de las secciones se ocultarán para los pacientes -->
-            @if(Auth::check() && Auth::user()->role !== 'patient')
+            @if(Auth::check() && Auth::user()->role === 'admin')
                 <li class="nav-item p-3">
                     <a href="{{ route('pacientes.grupos') }}" class="links_Listas">
                         <i class="bi bi-person"></i> Pacientes
@@ -98,8 +98,10 @@
         @endif
 
         <!-- Tabla de resultados de tests -->
-        @if(Auth::check() && Auth::user()->role !== 'patient')
-        <div class="mt-5">
+        @if(Auth::check() && Auth::user()->role === 'admin')
+        <div class="container mt-5">
+            <div class="card p-5 shadow-lg">
+
             <h4>Resultados de los Tests</h4>
             <table class="table table-bordered">
                 <thead>
@@ -121,6 +123,8 @@
                     @endforeach
                 </tbody>
             </table>
+
+            </div>
         </div>
         @endif
     </div>

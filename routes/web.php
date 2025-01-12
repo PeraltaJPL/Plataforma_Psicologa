@@ -15,14 +15,19 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\Auth\RegisterController;
 
+
+Route::middleware('guest')->group(function(){
 //Rutas para el registro
 Route::get('/register', [RegisterController::class, 'create'])->name('InicioSesion.register');
 Route::post('/register', [RegisterController::class, 'store']);
 
 //Rutas para el login y el logout
-Route::post('/login', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
-Route::get('/logout', [RegisterController::class, 'logout'])->name('logout');
+Route::post('/loginPost', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
 Route::get('/', [RegisterController::class, 'login'])->name('login');
+});
+
+//Ruta para cerrar sesion
+Route::get('/logout', [RegisterController::class, 'logout'])->name('logout');
 
 //Rutas para el perfil
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
