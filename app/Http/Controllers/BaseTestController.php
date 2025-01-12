@@ -30,7 +30,7 @@ class BaseTestController extends Controller
     public function submit(Request $request, $id)
     {
         $test = Test::with('questions.options')->findOrFail($id);
-        $userId = auth()->$id();
+        $userId = auth()->id();
 
         // Verificar el testId para llamar al método adecuado
         if ($test->testId == 1) {
@@ -161,35 +161,35 @@ class BaseTestController extends Controller
     protected function submitEstilosAprendizajeTest(Request $request, $test, $userId)
     {
         $answers = $request->input('answers');
-    
+
         // Validación: asegura que todas las preguntas tienen una respuesta
         foreach ($test->questions as $question) {
             if (!isset($answers[$question->questionId])) {
                 return back()->with('error', 'Por favor responde todas las preguntas.');
             }
         }
-    
+
         // Inicializa los puntos
         $visualPoints = 0;
         $auditoryPoints = 0;
         $kinestheticPoints = 0;
-    
+
         // Listas de preguntas por categoría
         $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
         $auditoryQuestions = [2, 5, 12, 15, 17, 21, 23];
         $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
-    
+
         // Procesar las respuestas y calcular puntos
         foreach ($test->questions as $question) {
             $questionNumber = $question->questionId - ($test->questions->first()->questionId - 1);
             $selectedOptionId = $answers[$question->questionId] ?? null;
-    
+
             if ($selectedOptionId) {
                 $selectedOption = Option::find($selectedOptionId);
-    
+
                 if ($selectedOption) {
                     $value = $selectedOption->value ?? 0;
-    
+
                     if (in_array($questionNumber, $visualQuestions)) {
                         $visualPoints += $value;
                     } elseif (in_array($questionNumber, $auditoryQuestions)) {
@@ -200,14 +200,14 @@ class BaseTestController extends Controller
                 }
             }
         }
-    
+
         // Crear el resultado en formato JSON
         $result = [
             'visual' => $visualPoints,
             'auditivo' => $auditoryPoints,
             'kinestesico' => $kinestheticPoints,
         ];
-    
+
         // Crear el registro de resultado del test
         $testResult = TestResult::create([
             'testId' => $test->testId,
@@ -216,19 +216,19 @@ class BaseTestController extends Controller
             'testDate' => now(),
             'result' => json_encode($result),
         ]);
-    
+
         // Almacenar respuestas del usuario
         foreach ($test->questions as $question) {
             $selectedOptionId = $answers[$question->questionId] ?? null;
             $selectedOptionText = null;
             $selectedOptionValue = null;
-    
+
             if ($selectedOptionId) {
                 $selectedOption = Option::find($selectedOptionId);
                 $selectedOptionText = $selectedOption->optionText ?? null;
                 $selectedOptionValue = $selectedOption->value ?? null;
             }
-    
+
             TestAnswer::create([
                 'resultId' => $testResult->resultId,
                 'questionId' => $question->questionId,
@@ -238,12 +238,12 @@ class BaseTestController extends Controller
                 'value' => $selectedOptionValue,
             ]);
         }
-    
+
         // Redirigir a la ruta de resultados
         return redirect()->route('tests.TestResults', $testResult->resultId)
                          ->with('success', 'Test completado exitosamente.');
     }
-    
+
 
     // Muestra los resultados de un test
     public function showResults($id)
@@ -266,14 +266,14 @@ class BaseTestController extends Controller
         $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
         $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
         $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
-        
+
         $visualScore = 0;
         $auditiveScore = 0;
         $kinestheticScore = 0;
 
         foreach ($testAnswers as $answer) {
             $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
-            
+
             if (in_array($questionNumber, $visualQuestions)) {
                 $visualScore += $answer->value;
             } elseif (in_array($questionNumber, $auditiveQuestions)) {
@@ -282,12 +282,12 @@ class BaseTestController extends Controller
                 $kinestheticScore += $answer->value;
             }
         }
-        
+
         // Formatear el resultado como un string legible
         $formattedResult = "Visual: {$visualScore} puntos\n";
         $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
         $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
-        
+
         // Actualizar el resultado en la base de datos con el formato legible
         $result->update(['result' => $formattedResult]);
 
