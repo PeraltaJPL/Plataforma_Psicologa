@@ -41,6 +41,10 @@ class BaseTestController extends Controller
             return $this->submitEstilosAprendizajeTest($request, $test, $userId);
         }
 
+        if ($test->testId == 5){
+            return $this->submitVocacionalTest($request, $test, $userId);
+        }
+
         return back()->with('error', 'Test no reconocido.');
     }
 
@@ -244,6 +248,118 @@ class BaseTestController extends Controller
                          ->with('success', 'Test completado exitosamente.');
     }
 
+    protected function submitVocacionalTest(Request $request, $test, $userId)
+    {
+
+    $answers = $request->input('answers');
+
+    // Validación: asegura que todas las preguntas tienen una respuesta
+    foreach ($test->questions as $question) {
+        if (!isset($answers[$question->questionId])) {
+            return back()->with('error', 'Por favor responde todas las preguntas.');
+        }
+    }
+
+    // Definir las áreas y las preguntas asociadas
+    $areas = [
+        'Arte y creatividad: Las Carreras que encajan con tu personalidad son...
+        Diseño Gráfico, Diseño y Decoración de Interiores, Diseño de Jardines, Diseño de Modas, DiseñoTextil, Diseño de Joyas, 
+        Artes Plásticas (Pintura, Escultura, Danza,Teatro, Artesanía, Cerámica), Dibujo Publicitario, Restauración y Museología, 
+        Modelaje, Fotografía, Gestión Gráfica y Publicitaria, Locución y Publicidad, Actuación, Camarógrafía, Arte Industrial, 
+        Producción Audiovisual y Multimedia, Comunicación y Producción en Radio yTelevisión, Diseño del Paisajes, Cine y Video, 
+        Comunicación Escénica paraTelevisión, Música, Teatro.' => [4, 9, 12, 20, 28, 31, 35, 39, 43, 46, 50, 56, 67, 68, 57, 77],
+
+        'Ciencias Sociales: Las Carreras que encajan con tu personalidad son...
+        Psicología,Trabajo Social, Idiomas, Educación Internacional, Historia y Geografía, Periodis- mo, Periodismo Digital, Derecho, 
+        Ciencias Políticas, Sociología, Antropología, Arqueología, Gestión Social y Desarrollo, Consejería Familiar, Comunicación y Publicidad, 
+        Administra- ción Educativa, Educación Especial, Psicopedagogía, EstimulaciónTemprana,Traducción Simultánea, Lingüística, 
+        Educación de Párvulos, Educador, Bibliotecología, Museología, Relaciones Internacionales y Diplomacia, 
+        Comunicación Social con Énfasis en Marketing y Gestión de Empresas, Redacción Creativa y Publicitaria, Relaciones Públicas y Comunicación Organizacional, 
+        Hotelería yTurismo,Teología, Institución Sacerdotal.' => [6, 13, 23, 25, 34, 37, 38, 42, 49, 55, 63, 66, 70, 72, 78],
+        
+        'Económica, administrativa y financiera: Las Carreras que encajan con tu personalidad son...
+        Administración de Empresas, Contabilidad, Auditoría, Ventas, Marketing Estratégico, Gestión y Negocios Internacionales, Gestión Empresarial, Gestión Financiera, 
+        Ingeniería Comercial, Comercio Exterior, Banca y Finanzas, Gestión de Recurso Humanos, Comunica- ciones Integradas en Marketing, 
+        Administración de Empresas Ecoturísticas y de Hospitalidad, Ciencias Económicas y Financieras, Administración y Ciencias Políticas, 
+        Ciencias Empresariales, Comercio Electrónico, Emprendimiento, Liderazgo y Emprendimiento, 
+        Gestión de Organismos Públicos (municipios, ministerios) Gestión de Centros Educativos.' => [5, 10, 15, 19, 21, 26, 29, 33, 36, 44, 53, 56, 59, 62, 71, 80],
+        
+        'Ciencia y tecnología: Las Carreras que encajan con tu personalidad son...
+        Ingeniería en Sistemas Computacionales, Geología, Ingeniería Civil, Arquitectura, Electró- nicaTelemática,Telecomunicaciones, 
+        Ingeniería Mecatrónica, Robótica, Imagen y Sonido, Minas, Petróleo y Metalurgia, Ingeniería Mecánica, Ingeniería Industrial, Física, 
+        Matemáticas Aplicadas, Ingeniería en Estadística, Ingeniería Automotriz, Biotecnología Ambiental, Ingeniería Geográfica, Carreras Militares, 
+        Marina, Aviación, Ejército, Guardia Nacional, Ingeniería en Costas y Obras Portuarias, Estadística Informática, 
+        Programación y Desarro- llo de Sistemas,Tecnología en Informática Educativa, Astronomía, 
+        Ingeniería en Ciencias Geográficas y Desarrollo Sustentable.' => [1, 7, 11, 17, 18, 24, 30, 41, 48, 51, 58, 60, 61, 64, 73, 79],
+        
+        'Ciencias ecológicas, biológicas y de salud: Las Carreras que encajan con tu personalidad son...
+        Biología, Bioquímica, Farmacología, Biología Marina, Bioanálisis, Biotecnología, Ciencias Ambientales, Zootecnia, Veterinaria, Nutrición y Estética, 
+        Cosmetología Dietética y Estética, Medicina, Obstetricia, Urgencias Médicas, Odontología, Enfermería,Tecnología, Oceano- grafía y Ciencias Ambientales, 
+        Agronomía, Horticultura y Fruticultora, Ingeniería de alimen- tos, Gastronomía, Cultura Física, Deportes y Rehabilitación, Gestión Ambiental, 
+        Ingeniería Ambiental, Optometría, Homeopatía, Reflexología.' => [2, 3, 8, 14, 16, 22, 27, 32, 40, 45, 47, 54, 57, 69, 74, 76]
+    ];
+
+    // Inicializar contadores para cada área
+    $areaCounts = array_fill_keys(array_keys($areas), 0);
+
+    // Procesar las respuestas y contar los "Me interesa" por área
+    foreach ($test->questions as $question) {
+        $questionNumber = $question->questionId - ($test->questions->first()->questionId - 1);
+        $selectedOptionId = $answers[$question->questionId] ?? null;
+
+        if ($selectedOptionId) {
+            $selectedOption = Option::find($selectedOptionId);
+
+            if ($selectedOption && $selectedOption->optionText == 'Me interesa') {
+                foreach ($areas as $areaName => $areaQuestions) {
+                    if (in_array($questionNumber, $areaQuestions)) {
+                        $areaCounts[$areaName]++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Determinar el área con más respuestas "Me interesa"
+    $maxArea = array_search(max($areaCounts), $areaCounts);
+
+    // Crear el registro de resultado del test
+    $testResult = TestResult::create([
+        'testId' => $test->testId,
+        'patientId' => null,
+        'userId' => $userId,
+        'testDate' => now(),
+        'result' => $maxArea,
+    ]);
+
+    // Almacenar respuestas del usuario
+    foreach ($test->questions as $question) {
+        $selectedOptionId = $answers[$question->questionId] ?? null;
+        $selectedOptionText = null;
+        $selectedOptionValue = null;
+
+        if ($selectedOptionId) {
+            $selectedOption = Option::find($selectedOptionId);
+            $selectedOptionText = $selectedOption->optionText ?? null;
+            $selectedOptionValue = $selectedOption->value ?? null;
+        }
+
+        TestAnswer::create([
+            'resultId' => $testResult->resultId,
+            'questionId' => $question->questionId,
+            'optionId' => $selectedOptionId,
+            'answerText' => $selectedOptionText,
+            'userId' => $userId,
+            'value' => $selectedOptionValue
+        ]);
+    }
+
+    // Redirigir a la ruta de resultados
+    return redirect()->route('tests.TestResults', $testResult->resultId)
+                     ->with('success', 'Test completado exitosamente.');
+
+    }
 
     // Muestra los resultados de un test
     public function showResults($id)
