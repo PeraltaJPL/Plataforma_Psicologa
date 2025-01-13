@@ -36,7 +36,7 @@
     <div class="row">
 
       <!-- Sidebar -->
-      <div id="sidebar" class="sidebar sidebar-collapsed col-md-2 bg-dark vh-100">
+      <div id="sidebar" class="sidebar sidebar-collapsed col-md-2 bg-dark">
           <ul class="nav flex-column text-white">
             @if(Auth::check() && Auth::user()->role === 'admin')
                 <li class="nav-item p-3">

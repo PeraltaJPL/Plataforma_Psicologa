@@ -56,7 +56,7 @@ class PacientesController extends Controller
         $user->career = $request->career;
         $user->schoolCycle = $request->schoolCycle;
         $user->email = $request->email;
-        $user->username = $this->generateUsername($request->name); // Generar username
+        // $user->username = $this->generateUsername($request->name); // Generar username
         $user->role = 'patient';
 
         // Generar contraseña personalizada (solo número de control)
