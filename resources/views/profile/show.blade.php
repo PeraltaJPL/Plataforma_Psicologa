@@ -16,6 +16,15 @@
             <div class="text-center">
                 <h2>{{ $user->name }}</h2>
                 <p class="text-muted">{{ $user->email }}</p>
+            
+                <div class="text-center">
+                    @if ($user->photo)
+                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 150px;">
+                @else
+                    <img src="{{ asset('storage/' . $defaultPhoto) }}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 150px;">
+                @endif
+                </div>
+                
             </div>
             <hr>
             <div class="row">
@@ -53,7 +62,7 @@
     <div class="modal fade" id="editInfoModal" tabindex="-1" aria-labelledby="editInfoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form action="{{ route('profile.update') }}" method="POST">
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="editInfoModalLabel">Editar Información</h5>
@@ -70,6 +79,20 @@
                             <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}" required>
                             @error('email') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">Foto de perfil</label>
+                            
+                            <input type="file" name="photo" id="photo" class="form-control" accept="image/*">
+                            @error('photo') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        @if ($user->photo)
+                            <div class="mb-3 text-center">
+                                <label class="form-label">Foto actual</label>
+                                <div class="text-center">
+                                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -79,6 +102,7 @@
             </div>
         </div>
     </div>
+    
     
     <!-- Modal para Cambiar Contraseña -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
