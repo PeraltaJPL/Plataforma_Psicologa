@@ -47,6 +47,10 @@ class BaseTestController extends Controller
             return $this->submitVocacionalTest($request, $test, $userId);
         }
 
+        if ($test->testId == 6) {
+            return $this->submitPsicometricoTest($request, $test, $userId);
+        }
+
         return back()->with('error', 'Test no reconocido.');
     }
 
@@ -269,7 +273,7 @@ class BaseTestController extends Controller
         Artes Plásticas (Pintura, Escultura, Danza,Teatro, Artesanía, Cerámica), Dibujo Publicitario, Restauración y Museología, 
         Modelaje, Fotografía, Gestión Gráfica y Publicitaria, Locución y Publicidad, Actuación, Camarógrafía, Arte Industrial, 
         Producción Audiovisual y Multimedia, Comunicación y Producción en Radio yTelevisión, Diseño del Paisajes, Cine y Video, 
-        Comunicación Escénica paraTelevisión, Música, Teatro.' => [38, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 99, 101, 102, 86, 109,111],
+        Comunicación Escénica paraTelevisión, Música, Teatro.' => [38, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 99, 101, 102, 86, 109, 111],
 
             'Ciencias Sociales: Las Carreras que encajan con tu personalidad son...
         Psicología,Trabajo Social, Idiomas, Educación Internacional, Historia y Geografía, Periodis- mo, Periodismo Digital, Derecho, 
@@ -304,7 +308,7 @@ class BaseTestController extends Controller
         $areaCounts = array_fill_keys(array_keys($areas), 0);
 
         // Recorrer las preguntas del test
-        
+
         foreach ($test->questions as $question) {
             $questionId = $question->questionId;
             $selectedOptionId = $answers[$questionId] ?? null;
@@ -395,6 +399,74 @@ class BaseTestController extends Controller
             ->with('success', 'Test completado exitosamente.');
     }
 
+    protected function submitPsicometricoTest(Request $request, $test, $userId)
+    {
+        $answers = $request->input('answers');
+
+        // Validación: asegura que todas las preguntas tienen una respuesta
+        for ($questionId = 115; $questionId <= 156; $questionId++) {
+            if (!isset($answers[$questionId])) {
+                return back()->with('error', 'Por favor responde todas las preguntas.');
+            }
+        }
+
+        // Contar las respuestas "Sí" (valor = 1)
+        $yesCount = 0;
+        foreach ($answers as $questionId => $selectedOptionId) {
+            // Validar que la respuesta pertenece al rango de este test
+            if ($questionId >= 115 && $questionId <= 156) {
+                $selectedOption = Option::find($selectedOptionId);
+                $selectedOptionValue = $selectedOption->value ?? null;
+
+                if ($selectedOptionValue == 1) { // Si el valor es "Sí"
+                    $yesCount++;
+                }
+            }
+        }
+
+        // Determinar el resultado según la suma de "Sí"
+        $resultMessage = '';
+        if ($yesCount >= 0 && $yesCount <= 25) {
+            $resultMessage = 'Demasiado Bajo: Tus habilidades de estudio requieren atención y desarrollo. Es importante adquirir técnicas y hábitos que te permitan estudiar de manera más efectiva.';
+        } elseif ($yesCount >= 26 && $yesCount <= 35) {
+            $resultMessage = 'Medio: Posees algunos hábitos de estudio, pero presentan deficiencias que es necesario mejorar. Trabajar en ellos puede optimizar significativamente tu rendimiento académico.';
+        } elseif ($yesCount >= 36 && $yesCount <= 42) {
+            $resultMessage = 'Sobresaliente: Tienes muy grandes habilidades de estudio, aunque aún hay margen para mejorar y alcanzar tu máximo potencial, pero poseés una gran habilidaqd para estudiar y te esfuerzas mucho para aprender.';
+        }
+
+        // Crear el registro del resultado del test
+        $testResult = TestResult::create([
+            'testId' => $test->testId,
+            'patientId' => null,
+            'userId' => $userId,
+            'testDate' => now(),
+            'result' => $resultMessage,
+        ]);
+
+        // Guardar las respuestas del usuario
+        foreach ($answers as $questionId => $selectedOptionId) {
+            if ($questionId >= 115 && $questionId <= 156) {
+                $selectedOption = Option::find($selectedOptionId);
+                $selectedOptionText = $selectedOption->optionText ?? null;
+                $selectedOptionValue = $selectedOption->value ?? null;
+
+                TestAnswer::create([
+                    'resultId' => $testResult->resultId,
+                    'questionId' => $questionId,
+                    'optionId' => $selectedOptionId,
+                    'answerText' => $selectedOptionText,
+                    'userId' => $userId,
+                    'value' => $selectedOptionValue,
+                ]);
+            }
+        }
+
+        // Redirigir a la ruta de resultados
+        return redirect()->route('tests.TestResults', $testResult->resultId)
+            ->with('success', 'Test completado exitosamente.');
+    }
+
+
 
     //-------------------------------------------------------------------------------------------------------------------------------------------
     // Muestra los resultados de un test
@@ -462,5 +534,13 @@ class BaseTestController extends Controller
     {
         $result = TestResult::findOrFail($id);
         return view('listaTests.resultsPsicologist', compact('result'));
+    }
+
+    public function destroy($id)
+    {
+        $result = TestResult::findOrFail($id);
+        $result->delete();
+    
+        return redirect()->route('listaTests.aplicacionTest')->with('success', 'Resultados eliminado correctamente.');
     }
 }

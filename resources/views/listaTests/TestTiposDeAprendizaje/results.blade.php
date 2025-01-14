@@ -89,6 +89,19 @@
                 <p>Lo siento, no pudimos calcular tu resultado. Intenta nuevamente.</p>
             </div>
         @endif
+        
+        {{-- Verifica si el test Psicométrico y si existe el resultado --}}
+        @if ($test->testId == 6 && isset($result) && !empty($result))
+            <div class="alert alert-info mt-4">
+                <h3>Resultado de tu evaluación de Test de Intereses Vocacionales y Profesionales:</h3>
+                <p>{{ $result }}</p>
+            </div>
+        @elseif ($test->testId == 6 && (empty($result) || !isset($result)))
+            {{-- Si no hay resultado asignado --}}
+            <div class="alert alert-warning mt-4">
+                <p>Lo siento, no pudimos calcular tu resultado. Intenta nuevamente.</p>
+            </div>
+        @endif
 
         <a href="{{ route('tests.show', $test->testId) }}" class="btn btn-secondary mt-3">Regresar al test</a>
     </div>

@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
     Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
     Route::get('/test-results/search', [ResultController::class, 'search'])->name('testResults.search');
+    Route::delete('/listaTests/{resultId}', [BaseTestController::class, 'destroy'])->name('listaTests.destroy');
 
 });
 
