@@ -20,6 +20,7 @@
 
             <div class="card-body">
                 @if ($result)
+                    <!-- Mostrar el analisis del resultado -->
                     <div class="bg-light p-4 rounded-3 border">
                         <div class="row">
                             <div class="col-12">
@@ -32,12 +33,28 @@
                                         <i class="bi bi-info-circle-fill me-2 fs-4"></i>
                                         <h4 class="mb-0">Interpretación:</h4>
                                     </div>
+                                    <!-- Este es el resultado del analisis -->
                                     <p class="lead mb-0">{!! nl2br(e($result->result)) !!}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Las respuestas detalladas -->
+                    <div class="mt-4">
+                        <h4>Respuestas Detalladas</h4>
+                        <ul class="list-group">
+                            @foreach ($testAnswers as $answer)
+                                <li class="list-group-item">
+                                    <strong>Pregunta:</strong> {{ $answer->question->text }} <br>
+                                    <strong>Respuesta:</strong> {{ $answer->answerText }} <br>
+                                    <strong>Valor:</strong> {{ $answer->value }}
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @else
+                    <!-- Si no hay respuestas -->
                     <div class="alert alert-warning shadow-sm">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>

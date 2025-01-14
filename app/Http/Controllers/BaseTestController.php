@@ -269,7 +269,7 @@ class BaseTestController extends Controller
         Artes Plásticas (Pintura, Escultura, Danza,Teatro, Artesanía, Cerámica), Dibujo Publicitario, Restauración y Museología, 
         Modelaje, Fotografía, Gestión Gráfica y Publicitaria, Locución y Publicidad, Actuación, Camarógrafía, Arte Industrial, 
         Producción Audiovisual y Multimedia, Comunicación y Producción en Radio yTelevisión, Diseño del Paisajes, Cine y Video, 
-        Comunicación Escénica paraTelevisión, Música, Teatro.' => [38, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 99, 101, 102, 86, 109,111],
+        Comunicación Escénica paraTelevisión, Música, Teatro.' => [38, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 99, 101, 102, 86, 109, 111],
 
             'Ciencias Sociales: Las Carreras que encajan con tu personalidad son...
         Psicología,Trabajo Social, Idiomas, Educación Internacional, Historia y Geografía, Periodis- mo, Periodismo Digital, Derecho, 
@@ -304,7 +304,7 @@ class BaseTestController extends Controller
         $areaCounts = array_fill_keys(array_keys($areas), 0);
 
         // Recorrer las preguntas del test
-        
+
         foreach ($test->questions as $question) {
             $questionId = $question->questionId;
             $selectedOptionId = $answers[$questionId] ?? null;
@@ -398,6 +398,9 @@ class BaseTestController extends Controller
 
     //-------------------------------------------------------------------------------------------------------------------------------------------
     // Muestra los resultados de un test
+
+    // Muestra los resultados desde la vista paciente
+    // Muestra los resultados de un test
     public function showResults($id)
     {
         $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
@@ -449,7 +452,7 @@ class BaseTestController extends Controller
                 'kinestesico' => $kinestheticScore
             ];
         }
-
+// Verificar, se supone que en esta parte se tiene que realizar el proceso pero mostrar unicamente el resultado sin las respuestas.
         return view('tests.TestResults', [
             'test' => $test,
             'testAnswers' => $testAnswers,
@@ -458,9 +461,77 @@ class BaseTestController extends Controller
         ]);
     }
 
+
+
+
+
+
+    // Muestra los resultados desde la vista psicologa
     public function showResultsPsychologist($id)
     {
-        $result = TestResult::findOrFail($id);
-        return view('listaTests.resultsPsicologist', compact('result'));
+        // $result = TestResult::findOrFail($id);
+        // return view('listaTests.resultsPsicologist', compact('result'));
+
+
+        // Obtener las respuestas del test usando el resultadoId
+        $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
+        if ($testAnswers->isEmpty()) {
+            return back()->with('error', 'No hay respuestas disponibles para este test.');
+        }
+
+        // Obtener el test asociado a las respuestas
+        $test = $testAnswers->first()->question->test ?? null;
+        if (!$test) {
+            return back()->with('error', 'El test asociado no fue encontrado.');
+        }
+
+        // Obtener el resultado del test
+        $result = TestResult::find($id);
+        $learningStyles = null;
+
+        // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
+        if ($test->testId == 2) {
+            $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
+            $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
+            $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
+
+            $visualScore = 0;
+            $auditiveScore = 0;
+            $kinestheticScore = 0;
+
+            foreach ($testAnswers as $answer) {
+                $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
+
+                if (in_array($questionNumber, $visualQuestions)) {
+                    $visualScore += $answer->value;
+                } elseif (in_array($questionNumber, $auditiveQuestions)) {
+                    $auditiveScore += $answer->value;
+                } elseif (in_array($questionNumber, $kinestheticQuestions)) {
+                    $kinestheticScore += $answer->value;
+                }
+            }
+
+            // Formatear el resultado como un string legible
+            $formattedResult = "Visual: {$visualScore} puntos\n";
+            $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
+            $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
+
+            // Actualizar el resultado en la base de datos con el formato legible
+            $result->update(['result' => $formattedResult]);
+
+            $learningStyles = [
+                'visual' => $visualScore,
+                'auditivo' => $auditiveScore,
+                'kinestesico' => $kinestheticScore
+            ];
+        }
+
+        // Retornar la vista con los datos
+        return view('listaTests.resultsPsicologist', [
+            'test' => $test,
+            'testAnswers' => $testAnswers,
+            'result' => $result,
+            'learningStyles' => $learningStyles
+        ]);
     }
 }
