@@ -22,6 +22,7 @@ class ProfileController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
     ]);
+    
 
     $user = Auth::user();
     $user->name = $request->name;
@@ -38,11 +39,11 @@ class ProfileController extends Controller
     } else {
         // Si no se sube una foto, asignar una imagen predeterminada basada en la inicial del nombre
         $initial = strtoupper(substr($request->name, 0, 1)); // Primera letra del nombre
-        $defaultPhotoPath = "profiles/{$initial}.jpg"; // Ruta de la imagen predeterminada en storage
+        $defaultPhoto = "profiles/{$initial}.jpg"; // Ruta de la imagen predeterminada en storage
 
         // Verificar si la imagen predeterminada existe antes de asignarla
-        if (File::exists(public_path('storage/' . $defaultPhotoPath))) {
-            $user->photo = $defaultPhotoPath;
+        if (File::exists(public_path('storage/' . $defaultPhoto))) {
+            $user->photo = $defaultPhoto;
         }
     }
 
