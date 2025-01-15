@@ -553,11 +553,13 @@ class BaseTestController extends Controller
             return redirect()->back()->with('error', 'Resultado no encontrado.');
         }
 
-        // Obtener el desglose del test
+        // Filtrar preguntas y respuestas únicamente para este resultado
         $testDetails = DB::table('tests')
             ->join('questions', 'tests.testId', '=', 'questions.testId')
-            ->join('test_answers', 'questions.questionId', '=', 'test_answers.questionId')
-            ->join('test_results', 'tests.testId', '=', 'test_results.testId')
+            ->join('test_answers', function ($join) use ($id) {
+                $join->on('questions.questionId', '=', 'test_answers.questionId')
+                    ->where('test_answers.resultId', '=', $id); // Filtra por el resultado específico
+            })
             ->select(
                 'tests.name as test_name',
                 'questions.question_text',

@@ -62,22 +62,23 @@
         ];
     @endphp
     <!-- Barra superior -->
-  <nav class="navbar navbar-dark bg-dark bg-gradient">
-    <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">TEST</span>
-      <span class="navbar-text text-white">
-        <a href="{{ route('profile.show') }}" class="links_Listas">
-            <!-- Mostrar la imagen de perfil del usuario o la imagen predeterminada -->
-            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
-            {{ $user->username ?? $user->name ?? 'Usuario' }}
-        </a>
-    </span>
-    
-    </div>
-  </nav>
+    <nav class="navbar navbar-dark bg-dark bg-gradient">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">TEST</span>
+            <span class="navbar-text text-white">
+                <a href="{{ route('profile.show') }}" class="links_Listas">
+                    <!-- Mostrar la imagen de perfil del usuario o la imagen predeterminada -->
+                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle"
+                        style="width: 30px; height: 30px; object-fit: cover;">
+                    {{ $user->username ?? ($user->name ?? 'Usuario') }}
+                </a>
+            </span>
 
-  <div class="container-fluid">
-    <div class="row">
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
 
             <!-- Sidebar -->
             <div id="sidebar" class="sidebar sidebar-collapsed col-md-2 bg-dark vh-1000">
@@ -181,7 +182,7 @@
                             <!-- Contenedor para el scroll -->
                             <div style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-bordered" id="resultsTable">
-                                    <thead>
+                                    <thead class="thead-light">
                                         <tr>
                                             <th>Usuario</th>
                                             <th>Test Realizado</th>
@@ -200,26 +201,28 @@
                                                 <td>{{ $result->User->career ?? 'N/A' }}</td>
                                                 <td>{{ $roles[$result->User->role] ?? 'N/A' }}</td>
                                                 <td>
-                                                    <a href="{{ route('tests.resultsPsicologist', ['id' => $result->resultId, 'testId' => $test->testId]) }} "
-                                                        class="btn btn-info">
-                                                        Ver Resultados
-                                                    </a>
-                                                    <br>
-                                                    <br>
-                                                    <form action="{{ route('listaTests.destroy', $result->resultId) }}"
-                                                        method="post">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="btn btn-danger">
-                                                            Eliminar Resultados
-                                                        </button>
-                                                    </form>
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <a href="{{ route('tests.resultsPsicologist', ['id' => $result->resultId, 'testId' => $result->testId]) }}"
+                                                            class="btn btn-info btn-sm mx-1">
+                                                            Ver Resultados
+                                                        </a>
+                                                        <form
+                                                            action="{{ route('listaTests.destroy', $result->resultId) }}"
+                                                            method="post" class="m-0">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm mx-1">
+                                                                Eliminar Resultados
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
+
 
                         </div>
                     </div>

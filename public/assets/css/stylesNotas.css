@@ -44,7 +44,7 @@ body {
 /* Sidebar fijo */
 .sidebar {
   position: fixed;
-  top: 56px;
+  top: 62px;
   /* Altura del navbar */
   left: 0;
   width: 200px;

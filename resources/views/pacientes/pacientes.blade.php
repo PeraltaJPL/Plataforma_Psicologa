@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/stylesPacientes.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/stylesHome.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/stylosVistas.css') }}">
 </head>
 
@@ -19,7 +20,8 @@
             <span class="navbar-brand mb-0 h1">PACIENTES</span>
             <span class="navbar-text text-white">
                 <a href="{{ route('profile.show') }}" class="links_Listas">
-                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"></i>{{ $user->username ?? ($user->name ?? 'Usuario') }}
+                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle"
+                        style="width: 30px; height: 30px; object-fit: cover;"></i>{{ $user->username ?? ($user->name ?? 'Usuario') }}
                 </a>
             </span>
         </div>
@@ -80,45 +82,46 @@
                         {{ session('success') }}
                     </div>
                 @endif
-
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>No. Control</th>
-                            <th>Carrera</th>
-                            <th>Ciclo Escolar</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
-                            @if ($user->role === 'patient')
-                                <tr>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->controlNumber }}</td>
-                                    <td>{{ $user->career }}</td>
-                                    <td>{{ $user->schoolCycle }}</td>
-                                    <td>
-                                        <a href="{{ route('pacientes.edit', $user->id) }}"
-                                            class="btn btn-warning">Editar</a>
-                                        <form action="{{ route('pacientes.destroy', $user->id) }}" method="POST"
-                                            style="display: inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <input type="hidden" name="career" value="{{ $career }}">
-                                            <button class="btn btn-danger">Eliminar</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endif
-                        @empty
+                <div style="max-height: 25rem; overflow-y: auto;">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td colspan="5" class="text-center">No hay pacientes registrados.</td>
+                                <th>Nombre</th>
+                                <th>No. Control</th>
+                                <th>Carrera</th>
+                                <th>Ciclo Escolar</th>
+                                <th>Acciones</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($users as $user)
+                                @if ($user->role === 'patient')
+                                    <tr>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->controlNumber }}</td>
+                                        <td>{{ $user->career }}</td>
+                                        <td>{{ $user->schoolCycle }}</td>
+                                        <td>
+                                            <a href="{{ route('pacientes.edit', $user->id) }}"
+                                                class="btn btn-warning">Editar</a>
+                                            <form action="{{ route('pacientes.destroy', $user->id) }}" method="POST"
+                                                style="display: inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <input type="hidden" name="career" value="{{ $career }}">
+                                                <button class="btn btn-danger">Eliminar</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endif
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">No hay pacientes registrados.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

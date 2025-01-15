@@ -53,7 +53,7 @@ body {
   
   /* Navbar fijo */
 .navbar {
-  padding-bottom: 9px;
+  padding-bottom: 8px;
   position: fixed;
   top: 0;
   left: 0;
@@ -64,7 +64,7 @@ body {
 /* Sidebar fijo */
 .sidebar {
   position: fixed;
-  top: 56px; /* Altura del navbar */
+  top: 62px; /* Altura del navbar */
   left: 0;
   width: 200px; /* Ajusta al ancho deseado */
   height: calc(100vh - 56px); /* Altura completa menos el navbar */
