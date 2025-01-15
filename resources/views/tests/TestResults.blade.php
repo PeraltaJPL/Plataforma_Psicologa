@@ -8,6 +8,7 @@
     <h2 class="mb-4">Resultados: {{ $test->name }}</h2>
     <p>Revisa tus respuestas</p>
 
+<<<<<<< Updated upstream
     <!-- <div class="card shadow">
         <div class="card-header">
             <h4>Resumen de Respuestas</h4>
@@ -34,6 +35,8 @@
             </ul>
         </div>
     </div> -->
+=======
+>>>>>>> Stashed changes
 
     <div class="card shadow mt-4">
         <div class="card-header">

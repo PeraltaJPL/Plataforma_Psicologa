@@ -8,6 +8,11 @@ use App\Models\TestResult;
 use App\Models\TestAnswer;
 use App\Models\Option;
 use Illuminate\Support\Facades\Auth;
+<<<<<<< Updated upstream
+=======
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+>>>>>>> Stashed changes
 
 class BaseTestController extends Controller
 {
@@ -43,10 +48,17 @@ class BaseTestController extends Controller
             return $this->submitEstilosAprendizajeTest($request, $test, $userId);
         }
 
-        if ($test->testId == 5) {
+        if ($test->testId == 8) {
             return $this->submitVocacionalTest($request, $test, $userId);
         }
 
+<<<<<<< Updated upstream
+=======
+        if ($test->testId == 9) {
+            return $this->submitPsicometricoTest($request, $test, $userId);
+        }
+
+>>>>>>> Stashed changes
         return back()->with('error', 'Test no reconocido.');
     }
 
@@ -473,6 +485,15 @@ class BaseTestController extends Controller
         // return view('listaTests.resultsPsicologist', compact('result'));
 
 
+<<<<<<< Updated upstream
+=======
+    public function showResultsPsychologist($id)
+    {
+
+
+
+
+>>>>>>> Stashed changes
         // Obtener las respuestas del test usando el resultadoId
         $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
         if ($testAnswers->isEmpty()) {
@@ -534,4 +555,77 @@ class BaseTestController extends Controller
             'learningStyles' => $learningStyles
         ]);
     }
+<<<<<<< Updated upstream
+=======
+
+
+    public function downloadResultAsPDF($id)
+    {
+        // // Obtener el resultado del test con el ID proporcionado
+        // $result = TestResult::with('test', 'user')->findOrFail($id);
+
+        // // Pasar los datos a la vista
+        // $pdf = Pdf::loadView('tests.pdfResult', compact('result'));
+
+        // // Retornar el archivo PDF como descarga
+        // return $pdf->download('Resultado_Test_' . $result->user->name . '.pdf');
+
+
+        // Obtener las respuestas del test usando el resultadoId
+        $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
+        if ($testAnswers->isEmpty()) {
+            return back()->with('error', 'No hay respuestas disponibles para este test.');
+        }
+
+        // Obtener el test asociado a las respuestas
+        $test = $testAnswers->first()->question->test ?? null;
+        if (!$test) {
+            return back()->with('error', 'El test asociado no fue encontrado.');
+        }
+
+        // Obtener el resultado del test
+        $result = TestResult::findOrFail($id);
+
+        // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
+        if ($test->testId == 2) {
+            $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
+            $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
+            $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
+
+            $visualScore = 0;
+            $auditiveScore = 0;
+            $kinestheticScore = 0;
+
+            foreach ($testAnswers as $answer) {
+                $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
+
+                if (in_array($questionNumber, $visualQuestions)) {
+                    $visualScore += $answer->value;
+                } elseif (in_array($questionNumber, $auditiveQuestions)) {
+                    $auditiveScore += $answer->value;
+                } elseif (in_array($questionNumber, $kinestheticQuestions)) {
+                    $kinestheticScore += $answer->value;
+                }
+            }
+
+            // Formatear el resultado como un string legible
+            $formattedResult = "Visual: {$visualScore} puntos\n";
+            $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
+            $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
+
+            // Actualizar el resultado en la base de datos con el formato legible
+            $result->update(['result' => $formattedResult]);
+        }
+
+        // Generar el PDF con las respuestas y el resultado
+        $pdf = Pdf::loadView('tests.pdfResult', [
+            'test' => $test,
+            'testAnswers' => $testAnswers,
+            'result' => $result
+        ]);
+
+        // Retornar el archivo PDF como descarga
+        return $pdf->download('Resultado_Test_' . $result->user->name . '.pdf');
+    }
+>>>>>>> Stashed changes
 }

@@ -16,7 +16,7 @@ use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\Auth\RegisterController;
 
 
-Route::middleware('guest')->group(function(){
+Route::middleware('guest')->group(function () {
     //Rutas para el registro
     Route::get('/register', [RegisterController::class, 'create'])->name('InicioSesion.register');
     Route::post('/register', [RegisterController::class, 'store']);
@@ -24,6 +24,15 @@ Route::middleware('guest')->group(function(){
     //Rutas para el login y el logout
     Route::post('/loginPost', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
     Route::get('/', [RegisterController::class, 'login'])->name('login');
+<<<<<<< Updated upstream
+=======
+
+
+    Route::get('/password/forgot', [PasswordController::class, 'showForgotForm'])->name('password.forgot');
+    Route::post('/password/forgot', [PasswordController::class, 'sendResetLink'])->name('password.email');
+    Route::get('password/reset/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [PasswordController::class, 'reset'])->name('password.update');
+>>>>>>> Stashed changes
 });
 
 //Ruta para cerrar sesion
@@ -42,7 +51,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/users/{id}', [UsuariosController::class, 'destroy'])->name('users.destroy');
 });
 
-    // Rutas para el Lista de los test
+// Rutas para el Lista de los test
 Route::middleware(['auth'])->group(function () {
     // Ruta de inicio
 
@@ -52,11 +61,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tests/{id}', [AutoestimaTestController::class, 'submit'])->name('tests.submit');
     Route::get('/listaTests', [BaseTestController::class, 'index'])->name('listaTests.aplicacionTest');
     Route::get('/tests/{id}/results', [BaseTestController::class, 'showResults'])->name('tests.TestResults'); // Mostrar resultados del test
-    
+
     // Ruta para ver los resultados de los tests
     // Route::get('/test-results/{id}', [ResultController::class, 'show'])->name('testResults.show');
     Route::get('/tests/results/{id}/psychologist', [BaseTestController::class, 'showResultsPsychologist'])->name('tests.resultsPsicologist');
     Route::get('/test-results/search', [ResultController::class, 'search'])->name('testResults.search');
+<<<<<<< Updated upstream
+=======
+    //    Ruta para el PDF
+    Route::get('/tests/results/download/{id}', [BaseTestController::class, 'downloadResultAsPDF'])->name('tests.downloadPDF');
+    Route::delete('/listaTests/{resultId}', [BaseTestController::class, 'destroy'])->name('listaTests.destroy');
+
+    // Route::get('/resultados/{testId}', [BaseTestController::class, 'showDetailsForPsicologist'])->name('resultados.show');
+>>>>>>> Stashed changes
 
 });
 
@@ -85,27 +102,24 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Ruta para la lista de grupos
     Route::get('/grupos', [GruposController::class, 'GruposL'])->name('pacientes.grupos');
 
-// Pacientes
-Route::prefix('pacientes')->group(function () {
-    // Mostrar la lista de pacientes, filtrada por carrera si el parámetro 'career' está presente
-    Route::get('/', [PacientesController::class, 'index'])->name('pacientes.index');
+    // Pacientes
+    Route::prefix('pacientes')->group(function () {
+        // Mostrar la lista de pacientes, filtrada por carrera si el parámetro 'career' está presente
+        Route::get('/', [PacientesController::class, 'index'])->name('pacientes.index');
 
-    // Mostrar el formulario para agregar un paciente
-    Route::get('/crear', [PacientesController::class, 'create'])->name('pacientes.create');
+        // Mostrar el formulario para agregar un paciente
+        Route::get('/crear', [PacientesController::class, 'create'])->name('pacientes.create');
 
-    // Guardar un nuevo paciente
-    Route::post('/', [PacientesController::class, 'store'])->name('pacientes.store');
+        // Guardar un nuevo paciente
+        Route::post('/', [PacientesController::class, 'store'])->name('pacientes.store');
 
-    // Mostrar el formulario para editar un paciente
-    Route::get('/edit/{patientId}', [PacientesController::class, 'edit'])->name('pacientes.edit');
+        // Mostrar el formulario para editar un paciente
+        Route::get('/edit/{patientId}', [PacientesController::class, 'edit'])->name('pacientes.edit');
 
-    // Actualizar los datos de un paciente
-    Route::put('/{patientId}', [PacientesController::class, 'update'])->name('pacientes.update');
+        // Actualizar los datos de un paciente
+        Route::put('/{patientId}', [PacientesController::class, 'update'])->name('pacientes.update');
 
-    // Eliminar un paciente
-    Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
-});
-
-
-
+        // Eliminar un paciente
+        Route::delete('/{patientId}', [PacientesController::class, 'destroy'])->name('pacientes.destroy');
+    });
 });
