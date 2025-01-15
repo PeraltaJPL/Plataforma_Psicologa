@@ -14,7 +14,7 @@ use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\Auth\RegisterController;
-
+use App\Http\Controllers\Auth\PasswordController;
 
 Route::middleware('guest')->group(function(){
     //Rutas para el registro
@@ -24,6 +24,14 @@ Route::middleware('guest')->group(function(){
     //Rutas para el login y el logout
     Route::post('/loginPost', [RegisterController::class, 'loginPost'])->name('login.attempt'); // Autenticación Login
     Route::get('/', [RegisterController::class, 'login'])->name('login');
+
+
+    Route::get('/password/forgot', [PasswordController::class, 'showForgotForm'])->name('password.forgot');
+    Route::post('/password/forgot', [PasswordController::class, 'sendResetLink'])->name('password.email');
+    Route::get('password/reset/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [PasswordController::class, 'reset'])->name('password.update');
+
+
 });
 
 //Ruta para cerrar sesion

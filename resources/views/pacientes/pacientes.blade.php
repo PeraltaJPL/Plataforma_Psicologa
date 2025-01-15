@@ -19,7 +19,7 @@
             <span class="navbar-brand mb-0 h1">PACIENTES</span>
             <span class="navbar-text text-white">
                 <a href="{{ route('profile.show') }}" class="links_Listas">
-                    <i class="bi bi-person-circle"> </i>{{ $user->username ?? ($user->name ?? 'Usuario') }}
+                    <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;"></i>{{ $user->username ?? ($user->name ?? 'Usuario') }}
                 </a>
             </span>
         </div>

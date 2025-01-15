@@ -39,45 +39,67 @@ class PacientesController extends Controller
 
     // Guarda los datos de un nuevo paciente en la base de datos
     public function store(Request $request)
-    {
-        // Validación de los datos del formulario
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'controlNumber' => 'required|string|max:255|unique:users,controlNumber',
-            'career' => 'required|string|max:255',
-            'schoolCycle' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-        ]);
+{
+    // Validación de los datos del formulario
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'controlNumber' => 'required|string|max:255|unique:users,controlNumber',
+        'career' => 'required|string|max:255',
+        'schoolCycle' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+    ]);
 
-        // Crear un nuevo usuario
-        $user = new User();
-        $user->name = $request->name;
-        $user->controlNumber = $request->controlNumber;
-        $user->career = $request->career;
-        $user->schoolCycle = $request->schoolCycle;
-        $user->email = $request->email;
-        // $user->username = $this->generateUsername($request->name); // Generar username
-        $user->role = 'patient';
+    // Crear un nuevo usuario
+    $user = new User();
+    $user->name = $request->name;
+    $user->controlNumber = $request->controlNumber;
+    $user->career = $request->career;
+    $user->schoolCycle = $request->schoolCycle;
+    $user->email = $request->email;
+    $user->role = 'patient';
 
-        // Generar contraseña personalizada (solo número de control)
-        $generatedPassword = $request->controlNumber;
+    // Generar contraseña personalizada (solo número de control)
+    $generatedPassword = $request->controlNumber;
 
-        // Cifrar la contraseña
-        $user->password = Hash::make($generatedPassword);
+    // Cifrar la contraseña
+    $user->password = Hash::make($generatedPassword);
 
-        // Guardar el usuario
-        $user->save();
+    // Obtener la primera letra del nombre en mayúsculas
+    $initial = strtoupper(substr($request->name, 0, 1));
 
-        // En caso de que ya se haya creado el usuario previamente con contraseña por defecto, actualizamos la contraseña
-        if ($user->password === bcrypt('default_password')) {
-            $user->password = Hash::make($generatedPassword);
-            $user->save();  // Guardamos la actualización
+    // Ruta de la imagen predeterminada basada en la inicial
+    $defaultPhoto = "profiles/{$initial}.jpg"; // Asumiendo que tienes imágenes en storage/app/public/profiles
+
+    // Verificar si se ha subido una imagen
+    if ($request->hasFile('photo')) {
+        // Guardar la imagen en el disco
+        $photo = $request->file('photo');
+        $photoName = time() . '.' . $photo->getClientOriginalExtension();
+        $photo->storeAs('public/profiles', $photoName);
+
+        // Asignar la ruta de la imagen a la variable
+        $photoPath = 'profiles/' . $photoName;
+    } else {
+        // Verificar si la imagen predeterminada existe
+        // Si la imagen predeterminada no existe, se usa una imagen predeterminada genérica
+        if (!file_exists(public_path("storage/{$defaultPhoto}"))) {
+            $defaultPhoto = 'profiles/default.jpg'; // Imagen predeterminada genérica
         }
 
-        // Redirigir con mensaje de éxito
-        return redirect()->route('pacientes.index', ['career' => $user->career])
-            ->with('success', 'Paciente registrado con éxito.');
+        // Asignar la ruta de la imagen predeterminada
+        $photoPath = $defaultPhoto;
     }
+
+    // Asignar la imagen al usuario
+    $user->photo = $photoPath;
+
+    // Guardar el usuario
+    $user->save();
+
+    // Redirigir con mensaje de éxito
+    return redirect()->route('pacientes.index', ['career' => $user->career])
+        ->with('success', 'Paciente registrado con éxito.');
+}
 
 
     // Muestra un formulario para editar los datos de un paciente
