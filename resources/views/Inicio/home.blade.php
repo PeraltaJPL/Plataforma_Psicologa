@@ -17,19 +17,17 @@
   <!-- Barra lateral -->
   <nav class="navbar navbar-dark bg-dark bg-gradient">
     <div class="container-fluid">
-        <span class="navbar-brand mb-0 h1">INICIO</span>
-        <span class="navbar-text text-white d-flex align-items-center">
-            @if($user->photo)
-                <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
-            @else
-                <i class="bi bi-person-circle me-2" style="font-size: 35px;"></i>
-            @endif
-            <a href="{{route('profile.show')}}" class="links_Listas text-white">
-                {{ $user->username ?? $user->name ?? 'Usuario' }}
-            </a>
-        </span>
+      <span class="navbar-brand mb-0 h1">INICIO</span>
+      <span class="navbar-text text-white">
+        <a href="{{ route('profile.show') }}" class="links_Listas">
+            <!-- Mostrar la imagen de perfil del usuario o la imagen predeterminada -->
+            <img src="{{ asset('storage/' . $user->photo) }}" alt="Foto de perfil" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+            {{ $user->username ?? $user->name ?? 'Usuario' }}
+        </a>
+    </span>
+    
     </div>
-</nav>
+  </nav>
 
 
   <div class="container-fluid">

@@ -32,7 +32,7 @@ body {
 
 /* Navbar fijo */
 .navbar {
-  padding-bottom: 14px;
+  /* padding-bottom: 10px; */
   position: fixed;
   top: 0;
   left: 0;
