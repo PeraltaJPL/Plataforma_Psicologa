@@ -1,30 +1,66 @@
 body {
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .navbar {
-    background-color: #333;
-  }
-  
-  .table {
-    background-color: white;
-    border-radius: 5px;
-  }
-  
-  .table th, .table td {
-    vertical-align: middle;
-  }
-  
-  .modal-header {
-    background-color: #007bff;
-    color: white;
-  }
+  font-family: 'Arial', sans-serif;
+}
 
-  .links_Listas{
-    text-decoration: none;
-    color: white;
-  }
+.navbar {
+  background-color: #333;
+}
 
-  .decoration{
-    text-decoration: none;
-  }
+.table {
+  background-color: white;
+  border-radius: 5px;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.modal-header {
+  background-color: #007bff;
+  color: white;
+}
+
+.links_Listas {
+  text-decoration: none;
+  color: white;
+}
+
+.decoration {
+  text-decoration: none;
+}
+
+/* Navbar fijo */
+.navbar {
+  padding-bottom: 14px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030;
+  /* Asegura que el navbar esté por encima de otros elementos */
+}
+
+/* Sidebar fijo */
+.sidebar {
+  position: fixed;
+  top: 56px;
+  /* Altura del navbar */
+  left: 0;
+  width: 200px;
+  /* Ajusta al ancho deseado */
+  height: calc(100vh - 56px);
+  /* Altura completa menos el navbar */
+  overflow-y: auto;
+  /* Permite desplazamiento si el contenido es mayor que la pantalla */
+  z-index: 1020;
+  /* Debajo del navbar */
+}
+
+/* Ajustar el contenedor principal */
+.col-md-10 {
+  margin-left: 200px;
+  /* Igual al ancho del sidebar */
+  margin-top: 56px;
+  /* Igual a la altura del navbar */
+}

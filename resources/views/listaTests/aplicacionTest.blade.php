@@ -11,17 +11,17 @@
     <link rel="stylesheet" href="{{ asset('assets/css/stylesHome.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/stylosVistas.css') }}">
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Botones "Continuar"
             const continueButtons = document.querySelectorAll('.btn-continue');
-    
+
             // Botones de control
             const disableButton = document.getElementById('disable-buttons');
             const enableButton = document.getElementById('enable-buttons');
-    
+
             // Recupera el estado de los botones desde LocalStorage
             const buttonsDisabled = localStorage.getItem('buttonsDisabled') === 'true';
-    
+
             // Si los botones deben estar desactivados, aplica el estado
             if (buttonsDisabled) {
                 continueButtons.forEach(button => {
@@ -29,18 +29,18 @@
                     button.style.pointerEvents = 'none'; // Evita clics
                 });
             }
-    
+
             // Desactivar todos los botones "Continuar"
-            disableButton.addEventListener('click', function () {
+            disableButton.addEventListener('click', function() {
                 continueButtons.forEach(button => {
                     button.classList.add('disabled');
                     button.style.pointerEvents = 'none'; // Evita clics
                 });
                 localStorage.setItem('buttonsDisabled', 'true'); // Guarda el estado en LocalStorage
             });
-    
+
             // Activar todos los botones "Continuar"
-            enableButton.addEventListener('click', function () {
+            enableButton.addEventListener('click', function() {
                 continueButtons.forEach(button => {
                     button.classList.remove('disabled');
                     button.style.pointerEvents = 'auto'; // Reactiva clics
@@ -129,7 +129,7 @@
                 </ul>
             </div>
 
-            <div class="col-md-10 bg-light p-4 vh-100">
+            <div class="col-md-10 bg-light p-4 vh-1000">
                 @if (Auth::check() && Auth::user()->role !== 'psychologist')
                     <div class="row justify-content-center">
                         @foreach ($tests as $test)
@@ -146,17 +146,18 @@
                         @endforeach
                     </div>
                     @if (Auth::check() && Auth::user()->role === 'admin')
-                    <div class="row mt-4">
-                        <div class="col text-center">
-                            <button id="disable-buttons" class="btn btn-warning">Desactivar Continuar</button>
-                            <button id="enable-buttons" class="btn btn-success">Activar Continuar</button>
+                        <div class="row mt-4">
+                            <div class="col text-center">
+                                <button id="disable-buttons" class="btn btn-warning">Desactivar Test</button>
+                                <button id="enable-buttons" class="btn btn-success">Activar Test</button>
+                            </div>
                         </div>
-                    </div>
                     @endif
                 @endif
 
                 <!-- Tabla de resultados de tests -->
                 @if (Auth::check() && Auth::user()->role === 'admin')
+                    <!-- Contenedor de la tabla con scroll -->
                     <div class="container mt-5">
                         <div class="card p-5 shadow-lg">
 
@@ -174,47 +175,52 @@
                                 </div>
                             </div>
 
-                            <!-- Tabla de resultados -->
-                            <table class="table table-bordered" id="resultsTable">
-                                <thead>
-                                    <tr>
-                                        <th>Usuario</th>
-                                        <th>Test Realizado</th>
-                                        <th>N.Control</th>
-                                        <th>Carrera</th>
-                                        <th>Roles</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($testResults as $result)
+                            <!-- Contenedor para el scroll -->
+                            <div style="max-height: 400px; overflow-y: auto;">
+                                <table class="table table-bordered" id="resultsTable">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $result->User->name ?? 'N/A' }}</td>
-                                            <td>{{ $result->test->name }}</td>
-                                            <td>{{ $result->User->controlNumber ?? 'N/A' }}</td>
-                                            <td>{{ $result->User->career ?? 'N/A' }}</td>
-                                            <td>{{ $roles[$result->User->role] ?? 'N/A' }}</td>
-                                            <td>
-                                                <a href="{{ route('tests.resultsPsicologist', $result->resultId) }}"
-                                                    class="btn btn-info">Ver Resultados</a>
-                                                <br>
-                                                <br>
-                                                <form action="{{ route('listaTests.destroy', $result->resultId) }}"
-                                                    method="post">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-danger">
-                                                        Eliminar Resultados
-                                                    </button>
-                                                </form>
-                                            </td>
+                                            <th>Usuario</th>
+                                            <th>Test Realizado</th>
+                                            <th>N.Control</th>
+                                            <th>Carrera</th>
+                                            <th>Roles</th>
+                                            <th>Acciones</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($testResults as $result)
+                                            <tr>
+                                                <td>{{ $result->User->name ?? 'N/A' }}</td>
+                                                <td>{{ $result->test->name }}</td>
+                                                <td>{{ $result->User->controlNumber ?? 'N/A' }}</td>
+                                                <td>{{ $result->User->career ?? 'N/A' }}</td>
+                                                <td>{{ $roles[$result->User->role] ?? 'N/A' }}</td>
+                                                <td>
+                                                    <a href="{{ route('tests.resultsPsicologist', ['id' => $result->resultId, 'testId' => $test->testId]) }} "
+                                                        class="btn btn-info">
+                                                        Ver Resultados
+                                                    </a>
+                                                    <br>
+                                                    <br>
+                                                    <form action="{{ route('listaTests.destroy', $result->resultId) }}"
+                                                        method="post">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-danger">
+                                                            Eliminar Resultados
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
 
                         </div>
                     </div>
+
                 @endif
             </div>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

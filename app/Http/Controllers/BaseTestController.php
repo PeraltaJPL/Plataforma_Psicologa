@@ -8,6 +8,7 @@ use App\Models\TestResult;
 use App\Models\TestAnswer;
 use App\Models\Option;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BaseTestController extends Controller
 {
@@ -530,17 +531,85 @@ class BaseTestController extends Controller
         ]);
     }
 
-    public function showResultsPsychologist($id)
-    {
-        $result = TestResult::findOrFail($id);
-        return view('listaTests.resultsPsicologist', compact('result'));
-    }
+    // public function showResults($id)
+    // {
+    //     $result = TestResult::findOrFail($id);
+    //     return view('listaTests.resultsPsicologist', compact('result'));
+    // }
 
     public function destroy($id)
     {
         $result = TestResult::findOrFail($id);
         $result->delete();
-    
+
         return redirect()->route('listaTests.aplicacionTest')->with('success', 'Resultados eliminado correctamente.');
     }
+
+    public function showResultsPsychologist($id, $testId)
+    {
+        // Obtener el resultado específico
+        $result = TestResult::find($id);
+        if (!$result) {
+            return redirect()->back()->with('error', 'Resultado no encontrado.');
+        }
+
+        // Obtener el desglose del test
+        $testDetails = DB::table('tests')
+            ->join('questions', 'tests.testId', '=', 'questions.testId')
+            ->join('test_answers', 'questions.questionId', '=', 'test_answers.questionId')
+            ->join('test_results', 'tests.testId', '=', 'test_results.testId')
+            ->select(
+                'tests.name as test_name',
+                'questions.question_text',
+                'test_answers.answerText as answer_text'
+            )
+            ->where('tests.testId', $testId)
+            ->get();
+
+        if ($testDetails->isEmpty()) {
+            return redirect()->back()->with('error', 'Test no encontrado o sin resultados.');
+        }
+
+        // Obtener el nombre del test y las preguntas con respuestas
+        $testName = $testDetails->first()->test_name;
+        $questions = $testDetails->map(function ($item) {
+            return [
+                'question_text' => $item->question_text,
+                'answer_text' => $item->answer_text ?? 'No respondida'
+            ];
+        });
+
+        // Pasar ambos conjuntos de datos a la vista
+        return view('listaTests.resultsPsicologist', compact('result', 'testName', 'questions'));
+    }
+    //     // Realizar la consulta utilizando la lógica de tu SQL
+    //     $testDetails = DB::table('tests')
+    //         ->join('questions', 'tests.testId', '=', 'questions.testId') // Relación con 'questions'
+    //         ->join('test_answers', 'questions.questionId', '=', 'test_answers.questionId') // Relación con 'test_answers'
+    //         ->join('test_results', 'tests.testId', '=', 'test_results.testId') // Relación con 'test_results'
+    //         ->select(
+    //             'tests.name as test_name', // Nombre del test
+    //             'questions.question_text', // Texto de la pregunta
+    //             'test_answers.answerText as answer_text' // Respuesta
+    //         )
+    //         ->where('tests.testId', $testId) // Filtro por testId
+    //         ->get();
+
+    //     // Verificar si la consulta retornó resultados
+    //     if ($testDetails->isEmpty()) {
+    //         return redirect()->back()->with('error', 'Test no encontrado o sin resultados.');
+    //     }
+
+    //     // Extraer el nombre del test y las preguntas con respuestas
+    //     $testName = $testDetails->first()->test_name; // Nombre del test (primer registro)
+    //     $questions = $testDetails->map(function ($item) {
+    //         return [
+    //             'question_text' => $item->question_text, // Texto de la pregunta
+    //             'answer_text' => $item->answer_text ?? 'No respondida' // Respuesta
+    //         ];
+    //     });
+
+    //     // Pasar los resultados a la vista
+    //     return view('listaTests.resultsPsicologist', compact('testName', 'questions'));
+    // }
 }

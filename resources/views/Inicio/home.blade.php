@@ -31,7 +31,7 @@
         <div class="row">
 
             <!-- Sidebar -->
-            <div id="sidebar" class="sidebar sidebar-collapsed col-md-2 bg-dark">
+            <div id="sidebar" class="sidebar bg-dark">
                 <ul class="nav flex-column text-white">
                     <li class="nav-item p-3 card-body bg-light bg-opacity-10 border rounded">
                         <a href="{{ route('Inicio.home') }}" class="links_Listas">
@@ -222,45 +222,47 @@
                             <div class="card-body">
                                 <h5 class="card-title">NOTAS <i class="bi bi-card-text"></i></h5>
                                 <!-- Tabla de notas -->
-                                <table class="table table-bordered bg-primary bg-opacity-75">
-                                    <thead>
-                                        <tr>
-                                            <th>Título</th>
-                                            <th>Descripción</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="notasTable" class="bg-light">
-                                        @forelse ($items as $item)
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    <table class="table table-bordered bg-primary bg-opacity-75">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $item->title }}</td>
-                                                <td>{{ $item->description }}</td>
-                                                <td>
-                                                    <form action="{{ route('destroy', $item->noteId) }}"
-                                                        method="post">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        {{-- <a href="" class="btn btn-info">
+                                                <th>Título</th>
+                                                <th>Descripción</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="notasTable" class="bg-light">
+                                            @forelse ($items as $item)
+                                                <tr>
+                                                    <td>{{ $item->title }}</td>
+                                                    <td>{{ $item->description }}</td>
+                                                    <td>
+                                                        <form action="{{ route('destroy', $item->noteId) }}"
+                                                            method="post">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            {{-- <a href="" class="btn btn-info">
                             <i class="bi bi-list-task"></i> Mostrar
                           </a> --}}
-                                                        <a href="{{ route('notas.edit', $item->noteId) }}"
-                                                            class="btn btn-warning">
-                                                            <i class="bi bi-pencil-square"></i> Editar
-                                                        </a>
-                                                        <button class="btn btn-danger">
-                                                            <i class="bi bi-recycle"></i> Eliminar
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                                {{-- <td colspan="3">No hay eventos el día de hoy</td> --}}
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="3">No hay notas</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                                            <a href="{{ route('notas.edit', $item->noteId) }}"
+                                                                class="btn btn-warning">
+                                                                <i class="bi bi-pencil-square"></i> Editar
+                                                            </a>
+                                                            <button class="btn btn-danger">
+                                                                <i class="bi bi-recycle"></i> Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                    {{-- <td colspan="3">No hay eventos el día de hoy</td> --}}
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3">No hay notas</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="text-end p-2">
                                 <a href="{{ route('notas.create') }}" class="decoration">

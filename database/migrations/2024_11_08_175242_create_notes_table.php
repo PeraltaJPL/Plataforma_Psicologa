@@ -10,8 +10,6 @@ class CreateNotesTable extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->bigIncrements('noteId');
-            // $table->unsignedBigInteger('userId');
-            // $table->foreign('userId')->references('userId')->on('users');
             $table->string('title', 100);
             $table->text('description');
             $table->timestamp('createdAt')->useCurrent();

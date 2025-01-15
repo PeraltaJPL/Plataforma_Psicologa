@@ -51,4 +51,29 @@ body {
     height: 100vh;
   }
   
-  
+  /* Navbar fijo */
+.navbar {
+  padding-bottom: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030; /* Asegura que el navbar esté por encima de otros elementos */
+}
+
+/* Sidebar fijo */
+.sidebar {
+  position: fixed;
+  top: 56px; /* Altura del navbar */
+  left: 0;
+  width: 200px; /* Ajusta al ancho deseado */
+  height: calc(100vh - 56px); /* Altura completa menos el navbar */
+  overflow-y: auto; /* Permite desplazamiento si el contenido es mayor que la pantalla */
+  z-index: 1020; /* Debajo del navbar */
+}
+
+/* Ajustar el contenedor principal */
+.col-md-10 {
+  margin-left: 200px; /* Igual al ancho del sidebar */
+  margin-top: 56px; /* Igual a la altura del navbar */
+}

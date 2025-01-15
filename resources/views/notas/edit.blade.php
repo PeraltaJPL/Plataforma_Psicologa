@@ -19,9 +19,9 @@
         <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">EDITAR NOTAS</span>
             <span class="navbar-text text-white">
-                <a href="{{ route('profile.show') }}" class="links_Listas">
+                {{-- <a href="{{ route('profile.show') }}" class="links_Listas">
                     <i class="bi bi-person-circle"> </i>{{ $user->username ?? ($user->name ?? 'Usuario') }}
-                </a>
+                </a> --}}
             </span>
         </div>
     </nav>
