@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Auth;
 class BaseTestController extends Controller
 {
     // Obtiene y muestra la lista de tests
-    public function index() {
+    public function index()
+    {
         $user = Auth::user();  // Esto obtiene al usuario autenticado
         $tests = Test::all();
         $testResults = TestResult::with('test', 'user', 'patient')->get(); // Cargar las relaciones de Test, User y Patient
@@ -21,7 +22,8 @@ class BaseTestController extends Controller
 
 
     // Muestra las preguntas y opciones de un test específico
-    public function show($id) {
+    public function show($id)
+    {
         $test = Test::with('questions.options')->findOrFail($id);
         return view('listaTests.TestTiposDeAprendizaje.show', compact('test'));
     }
@@ -41,8 +43,12 @@ class BaseTestController extends Controller
             return $this->submitEstilosAprendizajeTest($request, $test, $userId);
         }
 
-        if ($test->testId == 5){
+        if ($test->testId == 5) {
             return $this->submitVocacionalTest($request, $test, $userId);
+        }
+
+        if ($test->testId == 6) {
+            return $this->submitPsicometricoTest($request, $test, $userId);
         }
 
         return back()->with('error', 'Test no reconocido.');
@@ -158,7 +164,7 @@ class BaseTestController extends Controller
 
         // Redirigir a la ruta de resultados
         return redirect()->route('tests.TestResults', $testResult->resultId)
-                         ->with('success', 'Test completado exitosamente.');
+            ->with('success', 'Test completado exitosamente.');
     }
 
     // Método para procesar el Test de Estilos de Aprendizaje
@@ -245,7 +251,7 @@ class BaseTestController extends Controller
 
         // Redirigir a la ruta de resultados
         return redirect()->route('tests.TestResults', $testResult->resultId)
-                         ->with('success', 'Test completado exitosamente.');
+            ->with('success', 'Test completado exitosamente.');
     }
 
     protected function submitVocacionalTest(Request $request, $test, $userId)
@@ -259,28 +265,125 @@ class BaseTestController extends Controller
                 return back()->with('error', 'Por favor responde todas las preguntas.');
             }
         }
-    
+
+        // Definir las áreas y las preguntas asociadas
+        $areas = [
+            'Arte y creatividad: Las Carreras que encajan con tu personalidad son...
+        Diseño Gráfico, Diseño y Decoración de Interiores, Diseño de Jardines, Diseño de Modas, DiseñoTextil, Diseño de Joyas, 
+        Artes Plásticas (Pintura, Escultura, Danza,Teatro, Artesanía, Cerámica), Dibujo Publicitario, Restauración y Museología, 
+        Modelaje, Fotografía, Gestión Gráfica y Publicitaria, Locución y Publicidad, Actuación, Camarógrafía, Arte Industrial, 
+        Producción Audiovisual y Multimedia, Comunicación y Producción en Radio yTelevisión, Diseño del Paisajes, Cine y Video, 
+        Comunicación Escénica paraTelevisión, Música, Teatro.' => [38, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 99, 101, 102, 86, 109, 111],
+
+            'Ciencias Sociales: Las Carreras que encajan con tu personalidad son...
+        Psicología,Trabajo Social, Idiomas, Educación Internacional, Historia y Geografía, Periodis- mo, Periodismo Digital, Derecho, 
+        Ciencias Políticas, Sociología, Antropología, Arqueología, Gestión Social y Desarrollo, Consejería Familiar, Comunicación y Publicidad, 
+        Administra- ción Educativa, Educación Especial, Psicopedagogía, EstimulaciónTemprana,Traducción Simultánea, Lingüística, 
+        Educación de Párvulos, Educador, Bibliotecología, Museología, Relaciones Internacionales y Diplomacia, 
+        Comunicación Social con Énfasis en Marketing y Gestión de Empresas, Redacción Creativa y Publicitaria, Relaciones Públicas y Comunicación Organizacional, 
+        Hotelería yTurismo,Teología, Institución Sacerdotal.' => [40, 47, 2357, 59, 68, 71, 72, 76, 83, 89, 97, 100, 104, 106, 112],
+
+            'Económica, administrativa y financiera: Las Carreras que encajan con tu personalidad son...
+        Administración de Empresas, Contabilidad, Auditoría, Ventas, Marketing Estratégico, Gestión y Negocios Internacionales, Gestión Empresarial, Gestión Financiera, 
+        Ingeniería Comercial, Comercio Exterior, Banca y Finanzas, Gestión de Recurso Humanos, Comunica- ciones Integradas en Marketing, 
+        Administración de Empresas Ecoturísticas y de Hospitalidad, Ciencias Económicas y Financieras, Administración y Ciencias Políticas, 
+        Ciencias Empresariales, Comercio Electrónico, Emprendimiento, Liderazgo y Emprendimiento, 
+        Gestión de Organismos Públicos (municipios, ministerios) Gestión de Centros Educativos.' => [39, 44, 49, 53, 55, 60, 63, 67, 70, 78, 87, 90, 93, 96, 105, 114],
+
+            'Ciencia y tecnología: Las Carreras que encajan con tu personalidad son...
+        Ingeniería en Sistemas Computacionales, Geología, Ingeniería Civil, Arquitectura, Electró- nicaTelemática,Telecomunicaciones, 
+        Ingeniería Mecatrónica, Robótica, Imagen y Sonido, Minas, Petróleo y Metalurgia, Ingeniería Mecánica, Ingeniería Industrial, Física, 
+        Matemáticas Aplicadas, Ingeniería en Estadística, Ingeniería Automotriz, Biotecnología Ambiental, Ingeniería Geográfica, Carreras Militares, 
+        Marina, Aviación, Ejército, Guardia Nacional, Ingeniería en Costas y Obras Portuarias, Estadística Informática, 
+        Programación y Desarro- llo de Sistemas,Tecnología en Informática Educativa, Astronomía, 
+        Ingeniería en Ciencias Geográficas y Desarrollo Sustentable.' => [35, 41, 45, 51, 52, 58, 64, 75, 82, 85, 92, 94, 95, 98, 107, 113],
+
+            'Ciencias ecológicas, biológicas y de salud: Las Carreras que encajan con tu personalidad son...
+        Biología, Bioquímica, Farmacología, Biología Marina, Bioanálisis, Biotecnología, Ciencias Ambientales, Zootecnia, Veterinaria, Nutrición y Estética, 
+        Cosmetología Dietética y Estética, Medicina, Obstetricia, Urgencias Médicas, Odontología, Enfermería,Tecnología, Oceano- grafía y Ciencias Ambientales, 
+        Agronomía, Horticultura y Fruticultora, Ingeniería de alimen- tos, Gastronomía, Cultura Física, Deportes y Rehabilitación, Gestión Ambiental, 
+        Ingeniería Ambiental, Optometría, Homeopatía, Reflexología.' => [36, 37, 42, 48, 50, 56, 61, 66, 74, 79, 81, 88, 91, 103, 108, 110]
+        ];
+        // Inicializar contadores para cada área
+        $areaCounts = array_fill_keys(array_keys($areas), 0);
+
+        // Recorrer las preguntas del test
+
+        foreach ($test->questions as $question) {
+            $questionId = $question->questionId;
+            $selectedOptionId = $answers[$questionId] ?? null;
+
+            if ($selectedOptionId) {
+                // Buscar la opción seleccionada
+                $selectedOption = Option::find($selectedOptionId);
+                $selectedOptionValue = $selectedOption->value ?? null;
+
+                // Si la respuesta es válida, verificar el área asociada
+                if ($selectedOptionValue == 1) { // Suponiendo que "1" es "Me interesa"
+                    foreach ($areas as $area => $questionIds) {
+                        if (in_array($questionId, $questionIds)) {
+                            $areaCounts[$area]++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Determinar el área con mayor conteo
+        $maxArea = array_search(max($areaCounts), $areaCounts);
+
         // Crear el registro de resultado del test
         $testResult = TestResult::create([
             'testId' => $test->testId,
-            'patientId' => null,  // Ajusta si necesitas asignar pacientes
+            'patientId' => null,
             'userId' => $userId,
             'testDate' => now(),
-            'result' => null, // Calcula el resultado si es necesario
+            'result' => $maxArea,
         ]);
-    
+
+        // Procesar las respuestas y contar los "Me interesa" por área
+        /*
+    foreach ($test->questions as $question) {
+        $questionNumber = $question->questionId - ($test->questions->first()->questionId - 1);
+        $selectedOptionId = $answers[$question->questionId] ?? null;
+
+        if ($selectedOptionId) {
+            $selectedOption = Option::find($selectedOptionId);
+
+            if ($selectedOption && $selectedOption->optionText == '1 - Me interesa') {
+                foreach ($areas as $areaName => $areaQuestions) {
+                    if (in_array($questionNumber, $areaQuestions)) {
+                        $areaCounts[$areaName]++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
+    $testResult = TestResult::create([
+         'testId' => $test->testId,
+         'patientId' => null,
+         'userId' => $userId,
+         'testDate' => now(),
+         'result' => $maxArea,
+     ]);
+*/
+
+
         // Almacenar respuestas del usuario
         foreach ($test->questions as $question) {
             $selectedOptionId = $answers[$question->questionId] ?? null;
             $selectedOptionText = null;
             $selectedOptionValue = null;
-    
+
             if ($selectedOptionId) {
                 $selectedOption = Option::find($selectedOptionId);
                 $selectedOptionText = $selectedOption->optionText ?? null;
                 $selectedOptionValue = $selectedOption->value ?? null;
             }
-    
+
             TestAnswer::create([
                 'resultId' => $testResult->resultId,
                 'questionId' => $question->questionId,
@@ -290,154 +393,154 @@ class BaseTestController extends Controller
                 'value' => $selectedOptionValue
             ]);
         }
-    
-        // Definir las áreas y las preguntas asociadas
-        $areas = [
-            'Arte y creatividad: Las Carreras que encajan con tu personalidad son...
-            Diseño Gráfico, Diseño y Decoración de Interiores, Diseño de Jardines, Diseño de Modas, DiseñoTextil, Diseño de Joyas, 
-            Artes Plásticas (Pintura, Escultura, Danza,Teatro, Artesanía, Cerámica), Dibujo Publicitario, Restauración y Museología, 
-            Modelaje, Fotografía, Gestión Gráfica y Publicitaria, Locución y Publicidad, Actuación, Camarógrafía, Arte Industrial, 
-            Producción Audiovisual y Multimedia, Comunicación y Producción en Radio yTelevisión, Diseño del Paisajes, Cine y Video, 
-            Comunicación Escénica paraTelevisión, Música, Teatro.' => [37, 43, 46, 54, 62, 65, 69, 73, 77, 80, 84, 90, 101, 102, 91, 111],
-    
-            'Ciencias Sociales: Las Carreras que encajan con tu personalidad son...
-            Psicología,Trabajo Social, Idiomas, Educación Internacional, Historia y Geografía, Periodis- mo, Periodismo Digital, Derecho, 
-            Ciencias Políticas, Sociología, Antropología, Arqueología, Gestión Social y Desarrollo, Consejería Familiar, Comunicación y Publicidad, 
-            Administra- ción Educativa, Educación Especial, Psicopedagogía, EstimulaciónTemprana,Traducción Simultánea, Lingüística, 
-            Educación de Párvulos, Educador, Bibliotecología, Museología, Relaciones Internacionales y Diplomacia, 
-            Comunicación Social con Énfasis en Marketing y Gestión de Empresas, Redacción Creativa y Publicitaria, Relaciones Públicas y Comunicación Organizacional, 
-            Hotelería yTurismo,Teología, Institución Sacerdotal.' => [40, 47, 57, 59, 68, 71, 72, 76, 83, 89, 97, 100, 104, 106, 112],
-            
-            'Económica, administrativa y financiera: Las Carreras que encajan con tu personalidad son...
-            Administración de Empresas, Contabilidad, Auditoría, Ventas, Marketing Estratégico, Gestión y Negocios Internacionales, Gestión Empresarial, Gestión Financiera, 
-            Ingeniería Comercial, Comercio Exterior, Banca y Finanzas, Gestión de Recurso Humanos, Comunicaciones Integradas en Marketing, 
-            Administración de Empresas Ecoturísticas y de Hospitalidad, Ciencias Económicas y Financieras, Administración y Ciencias Políticas, 
-            Ciencias Empresariales, Comercio Electrónico, Emprendimiento, Liderazgo y Emprendimiento, 
-            Gestión de Organismos Públicos (municipios, ministerios) Gestión de Centros Educativos.' => [5, 10, 15, 19, 21, 26, 29, 33, 36, 44, 53, 56, 59, 62, 71, 80],
-            
-            'Ciencia y tecnología: Las Carreras que encajan con tu personalidad son...
-            Ingeniería en Sistemas Computacionales, Geología, Ingeniería Civil, Arquitectura, ElectrónicaTelemática, Telecomunicaciones, 
-            Ingeniería Mecatrónica, Robótica, Imagen y Sonido, Minas, Petróleo y Metalurgia, Ingeniería Mecánica, Ingeniería Industrial, Física, 
-            Matemáticas Aplicadas, Ingeniería en Estadística, Ingeniería Automotriz, Biotecnología Ambiental, Ingeniería Geográfica, Carreras Militares, 
-            Marina, Aviación, Ejército, Guardia Nacional, Ingeniería en Costas y Obras Portuarias, Estadística Informática, 
-            Programación y Desarrollo de Sistemas, Tecnología en Informática Educativa, Astronomía, 
-            Ingeniería en Ciencias Geográficas y Desarrollo Sustentable.' => [1, 7, 11, 17, 18, 24, 30, 41, 48, 51, 58, 60, 61, 64, 73, 79],
-            
-            'Ciencias ecológicas, biológicas y de salud: Las Carreras que encajan con tu personalidad son...
-            Biología, Bioquímica, Farmacología, Biología Marina, Bioanálisis, Biotecnología, Ciencias Ambientales, Zootecnia, Veterinaria, Nutrición y Estética, 
-            Cosmetología Dietética y Estética, Medicina, Obstetricia, Urgencias Médicas, Odontología, Enfermería, Tecnología, Oceano- grafía y Ciencias Ambientales, 
-            Agronomía, Horticultura y Fruticultora, Ingeniería de alimentos, Gastronomía, Cultura Física, Deportes y Rehabilitación, Gestión Ambiental, 
-            Ingeniería Ambiental, Optometría, Homeopatía, Reflexología.' => [2, 3, 8, 14, 16, 22, 27, 32, 40, 45, 47, 54, 57, 69, 74, 76]
-        ];
-    
-       // Inicializar contadores para cada área
-$areaCountsMeInteresa = array_fill_keys(array_keys($areas), 0);
 
-// Procesar las respuestas y contar los "Me interesa" por área
-foreach ($test->questions as $question) {
-    $selectedOptionId = $answers[$question->questionId] ?? null;
+        // Redirigir a la ruta de resultados
+        return redirect()->route('tests.TestResults', $testResult->resultId)
+            ->with('success', 'Test completado exitosamente.');
+    }
 
-    if ($selectedOption && trim(strtolower($selectedOption->optionText)) == 'me interesa') {
+    protected function submitPsicometricoTest(Request $request, $test, $userId)
+    {
+        $answers = $request->input('answers');
 
-        if ($selectedOption && $selectedOption->optionText == 'Me interesa') {
-            foreach ($areas as $areaName => $areaQuestions) {
-                if (in_array($question->questionId, $areaQuestions)) {
-                    $areaCountsMeInteresa[$areaName]++;
-                    break;
+        // Validación: asegura que todas las preguntas tienen una respuesta
+        for ($questionId = 115; $questionId <= 156; $questionId++) {
+            if (!isset($answers[$questionId])) {
+                return back()->with('error', 'Por favor responde todas las preguntas.');
+            }
+        }
+
+        // Contar las respuestas "Sí" (valor = 1)
+        $yesCount = 0;
+        foreach ($answers as $questionId => $selectedOptionId) {
+            // Validar que la respuesta pertenece al rango de este test
+            if ($questionId >= 115 && $questionId <= 156) {
+                $selectedOption = Option::find($selectedOptionId);
+                $selectedOptionValue = $selectedOption->value ?? null;
+
+                if ($selectedOptionValue == 1) { // Si el valor es "Sí"
+                    $yesCount++;
                 }
             }
         }
+
+        // Determinar el resultado según la suma de "Sí"
+        $resultMessage = '';
+        if ($yesCount >= 0 && $yesCount <= 25) {
+            $resultMessage = 'Demasiado Bajo: Tus habilidades de estudio requieren atención y desarrollo. Es importante adquirir técnicas y hábitos que te permitan estudiar de manera más efectiva.';
+        } elseif ($yesCount >= 26 && $yesCount <= 35) {
+            $resultMessage = 'Medio: Posees algunos hábitos de estudio, pero presentan deficiencias que es necesario mejorar. Trabajar en ellos puede optimizar significativamente tu rendimiento académico.';
+        } elseif ($yesCount >= 36 && $yesCount <= 42) {
+            $resultMessage = 'Sobresaliente: Tienes muy grandes habilidades de estudio, aunque aún hay margen para mejorar y alcanzar tu máximo potencial, pero poseés una gran habilidaqd para estudiar y te esfuerzas mucho para aprender.';
+        }
+
+        // Crear el registro del resultado del test
+        $testResult = TestResult::create([
+            'testId' => $test->testId,
+            'patientId' => null,
+            'userId' => $userId,
+            'testDate' => now(),
+            'result' => $resultMessage,
+        ]);
+
+        // Guardar las respuestas del usuario
+        foreach ($answers as $questionId => $selectedOptionId) {
+            if ($questionId >= 115 && $questionId <= 156) {
+                $selectedOption = Option::find($selectedOptionId);
+                $selectedOptionText = $selectedOption->optionText ?? null;
+                $selectedOptionValue = $selectedOption->value ?? null;
+
+                TestAnswer::create([
+                    'resultId' => $testResult->resultId,
+                    'questionId' => $questionId,
+                    'optionId' => $selectedOptionId,
+                    'answerText' => $selectedOptionText,
+                    'userId' => $userId,
+                    'value' => $selectedOptionValue,
+                ]);
+            }
+        }
+
+        // Redirigir a la ruta de resultados
+        return redirect()->route('tests.TestResults', $testResult->resultId)
+            ->with('success', 'Test completado exitosamente.');
     }
-}
 
-// Verificar si hay respuestas "Me interesa" en alguna de las áreas
-$maxCountMeInteresa = max($areaCountsMeInteresa);
-if ($maxCountMeInteresa > 0) {
-    // Determinar el área con más respuestas "Me interesa"
-    $maxAreaMeInteresa = array_search($maxCountMeInteresa, $areaCountsMeInteresa);
 
-    // Mostrar el área con más respuestas "Me interesa" y sus preguntas correspondientes
-    $resultMessage = "El área con más respuestas 'Me interesa' es: " . $maxAreaMeInteresa . ". ";
-    $resultMessage .= "Descripción: Las Carreras que encajan con tu personalidad son... ";
-    $resultMessage .= "Carreras: " . implode(', ', $areas[$maxAreaMeInteresa]) . ". ";
-    $resultMessage .= "Con un total de " . $maxCountMeInteresa . " respuestas.";
-} else {
-    $resultMessage = "No hay respuestas 'Me interesa' en ninguna de las áreas.";
-}
 
-// Actualizar el resultado del test
-$testResult->update(['result' => $resultMessage]);
-
-// Redirigir a la ruta de resultados
-return redirect()->route('tests.TestResults', $testResult->resultId)
-                 ->with('success', 'Test completado exitosamente.');
-                }
-  
-
+    //-------------------------------------------------------------------------------------------------------------------------------------------
     // Muestra los resultados de un test
     public function showResults($id)
-{
-    $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
-    if ($testAnswers->isEmpty()) {
-        return back()->with('error', 'No hay respuestas disponibles para este test.');
-    }
-
-    $test = $testAnswers->first()->question->test ?? null;
-    if (!$test) {
-        return back()->with('error', 'El test asociado no fue encontrado.');
-    }
-
-    $result = TestResult::find($id);
-    $learningStyles = null;
-
-    // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
-    if ($test->testId == 2) {
-        $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
-        $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
-        $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
-
-        $visualScore = 0;
-        $auditiveScore = 0;
-        $kinestheticScore = 0;
-
-        foreach ($testAnswers as $answer) {
-            $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
-
-            if (in_array($questionNumber, $visualQuestions)) {
-                $visualScore += $answer->value;
-            } elseif (in_array($questionNumber, $auditiveQuestions)) {
-                $auditiveScore += $answer->value;
-            } elseif (in_array($questionNumber, $kinestheticQuestions)) {
-                $kinestheticScore += $answer->value;
-            }
+    {
+        $testAnswers = TestAnswer::where('resultId', $id)->get(['questionId', 'optionId', 'answerText', 'value']);
+        if ($testAnswers->isEmpty()) {
+            return back()->with('error', 'No hay respuestas disponibles para este test.');
         }
 
-        // Formatear el resultado como un string legible
-        $formattedResult = "Visual: {$visualScore} puntos\n";
-        $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
-        $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
+        $test = $testAnswers->first()->question->test ?? null;
+        if (!$test) {
+            return back()->with('error', 'El test asociado no fue encontrado.');
+        }
 
-        // Actualizar el resultado en la base de datos con el formato legible
-        $result->update(['result' => $formattedResult]);
+        $result = TestResult::find($id);
+        $learningStyles = null;
 
-        $learningStyles = [
-            'visual' => $visualScore,
-            'auditivo' => $auditiveScore,
-            'kinestesico' => $kinestheticScore
-        ];
+        // Evaluar estilos de aprendizaje si es el test correspondiente (ID = 2)
+        if ($test->testId == 2) {
+            $visualQuestions = [1, 3, 6, 9, 10, 11, 14];
+            $auditiveQuestions = [2, 5, 12, 15, 17, 21, 23];
+            $kinestheticQuestions = [4, 7, 8, 13, 19, 22, 24];
+
+            $visualScore = 0;
+            $auditiveScore = 0;
+            $kinestheticScore = 0;
+
+            foreach ($testAnswers as $answer) {
+                $questionNumber = $answer->question->questionId - ($test->questions->first()->questionId - 1);
+
+                if (in_array($questionNumber, $visualQuestions)) {
+                    $visualScore += $answer->value;
+                } elseif (in_array($questionNumber, $auditiveQuestions)) {
+                    $auditiveScore += $answer->value;
+                } elseif (in_array($questionNumber, $kinestheticQuestions)) {
+                    $kinestheticScore += $answer->value;
+                }
+            }
+
+            // Formatear el resultado como un string legible
+            $formattedResult = "Visual: {$visualScore} puntos\n";
+            $formattedResult .= "Auditivo: {$auditiveScore} puntos\n";
+            $formattedResult .= "Kinestésico: {$kinestheticScore} puntos";
+
+            // Actualizar el resultado en la base de datos con el formato legible
+            $result->update(['result' => $formattedResult]);
+
+            $learningStyles = [
+                'visual' => $visualScore,
+                'auditivo' => $auditiveScore,
+                'kinestesico' => $kinestheticScore
+            ];
+        }
+
+        return view('tests.TestResults', [
+            'test' => $test,
+            'testAnswers' => $testAnswers,
+            'result' => $result,
+            'learningStyles' => $learningStyles
+        ]);
     }
-
-    return view('tests.TestResults', [
-        'test' => $test,
-        'testAnswers' => $testAnswers,
-        'result' => $result,
-        'learningStyles' => $learningStyles
-    ]);
-}
 
     public function showResultsPsychologist($id)
     {
         $result = TestResult::findOrFail($id);
         return view('listaTests.resultsPsicologist', compact('result'));
+    }
+
+    public function destroy($id)
+    {
+        $result = TestResult::findOrFail($id);
+        $result->delete();
+    
+        return redirect()->route('listaTests.aplicacionTest')->with('success', 'Resultados eliminado correctamente.');
     }
 }

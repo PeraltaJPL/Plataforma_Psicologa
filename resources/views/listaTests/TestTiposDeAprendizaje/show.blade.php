@@ -15,7 +15,7 @@
                 <p class="text-muted"><strong>Guía:</strong> {{ $test->guide }}</p>
             @endif
 
-            <form action="{{ route('tests.submit', $test->testId) }}" method="POST">
+            <form action="{{ route('tests.submit', $test->testId) }}" method="POST" id="testForm">
                 @csrf
 
                 @foreach ($test->questions as $question)
@@ -52,4 +52,21 @@
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('testForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Detener el envío del formulario
+
+        const formData = new FormData(this);
+        const entries = Array.from(formData.entries());
+
+        console.log("Datos enviados:");
+        entries.forEach(([key, value]) => {
+            console.log(`${key}: ${value}`);
+        });
+
+        // Si deseas enviar el formulario después del console.log
+        this.submit();
+    });
+</script>
+
 @endsection

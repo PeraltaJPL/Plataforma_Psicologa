@@ -12,14 +12,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('controlNumber')->unique()->after('name');
+            // $table->string('controlNumber')->unique()->after('name');
         });
     }
 
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('controlNumber');
+            // $table->dropColumn('controlNumber');
         });
     }
 
